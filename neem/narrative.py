@@ -157,16 +157,8 @@ class Narrative:
                 vec_writer.writerow(vec)
 
     def _write_reasoning_tasks_to_csv_file_(self):
-        vecs = self.get_reasoning_tasks()
         csv_file_path = join(self._path_to_csv, 'reasoning_tasks.csv')
-
-
-        with open(csv_file_path, 'wb') as csvfile:
-            vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(reasoning_task_table_header.get_definition())
-
-            for vec in vecs:
-                vec_writer.writerow(vec)
+        narrative_csv.write(reasoning_task_table_header.get_definition(), self.get_reasoning_tasks(), csv_file_path)
 
     def _write_poses_to_csv_file_(self):
         csv_file_path = join(self._path_to_csv, 'poses.csv')
