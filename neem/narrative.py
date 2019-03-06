@@ -1,4 +1,5 @@
 import csv
+from os import makedirs
 
 import rdflib
 
@@ -7,7 +8,7 @@ from neem.logging_instance.pose import Pose
 from neem.logging_instance.reasoning_task import ReasoningTask
 from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
 from ontology.ontologyHandler import get_uri
-from os.path import join
+from os.path import join, basename, exists
 
 
 def get_vector_definition():
@@ -61,6 +62,7 @@ class Narrative:
         self._graph_ = self._init_graph()
         self.reasoning_tasks = None
         self.poses = None
+        self.name = basename(path_to_narrative_file).split('.')[0]
 
     def get_reasoning_tasks(self):
         if self.reasoning_tasks is None:
@@ -176,9 +178,14 @@ class Narrative:
         return action_types
 
     def transform_to_csv_file(self, path_destination_dir):
-        self._write_narrative_vectors_to_csv_file_(path_destination_dir)
-        self._write_reasoning_tasks_to_csv_file_(path_destination_dir)
-        self._write_poses_to_csv_file_(path_destination_dir)
+        path_to_csv = join(path_destination_dir, self.name)
+
+        if not exists(path_to_csv):
+            makedirs(path_to_csv)
+            
+        self._write_narrative_vectors_to_csv_file_(path_to_csv)
+        self._write_reasoning_tasks_to_csv_file_(path_to_csv)
+        self._write_poses_to_csv_file_(path_to_csv)
 
     def _write_narrative_vectors_to_csv_file_(self, result_dir_path):
         vecs = self.toVecs()

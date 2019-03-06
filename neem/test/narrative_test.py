@@ -21,6 +21,7 @@ def test_should_convert_narrative_to_csv_file():
 
     narrative = Narrative(NEEM_TEST_FILE_PATH)
     narrative.transform_to_csv_file(DESTINATION_PATH_DIR)
-    test_result_files = listdir(DESTINATION_PATH_DIR)
 
+    narrative_dir_path  = join(DESTINATION_PATH_DIR, narrative.name)
+    test_result_files = listdir(narrative_dir_path)
     assert len(test_result_files) == 3
