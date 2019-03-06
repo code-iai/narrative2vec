@@ -6,6 +6,7 @@ name = "pypi"
 [dev-packages]
 
 [packages]
+rdflib = "*"
 
 [requires]
 python_version = "2.7"
