@@ -9,26 +9,7 @@ from neem.logging_instance.reasoning_task import ReasoningTask
 from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
 from ontology.ontologyHandler import get_uri
 from os.path import join, basename, exists
-
-
-def get_vector_definition():
-    definition = ['id',
-                  'type',
-                  'startTime',
-                  'endTime',
-                  'duration',
-                  'success',
-                  'failure',
-                  'parent',
-                  'next',
-                  'previous',
-                  'object_acted_on',
-                  'object_type',
-                  'bodyPartsUsed',
-                  'arm',
-                  'grasp']
-
-    return definition
+from constants import action_table_header
 
 
 def get_reasoning_task_vector_definition():
@@ -182,7 +163,7 @@ class Narrative:
 
         if not exists(path_to_csv):
             makedirs(path_to_csv)
-            
+
         self._write_narrative_vectors_to_csv_file_(path_to_csv)
         self._write_reasoning_tasks_to_csv_file_(path_to_csv)
         self._write_poses_to_csv_file_(path_to_csv)
@@ -193,7 +174,7 @@ class Narrative:
 
         with open(narrative_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(get_vector_definition())
+            vec_writer.writerow(action_table_header.get_definition())
 
             for vec in vecs:
                 vec_writer.writerow(vec)
@@ -204,7 +185,7 @@ class Narrative:
 
         with open(narrative_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(get_vector_definition())
+            vec_writer.writerow(get_reasoning_task_vector_definition())
 
             for vec in vecs:
                 vec_writer.writerow(vec)
@@ -215,7 +196,7 @@ class Narrative:
 
         with open(narrative_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(get_vector_definition())
+            vec_writer.writerow(get_poses_vector_definition())
 
             for vec in vecs:
                 vec_writer.writerow(vec)
