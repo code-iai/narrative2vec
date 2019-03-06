@@ -10,6 +10,7 @@ from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE
 from ontology.ontologyHandler import get_uri
 from os.path import join, basename, exists
 from constants import action_table_header, reasoning_task_table_header, poses
+import narrative_csv
 
 
 class Narrative:
@@ -19,6 +20,7 @@ class Narrative:
         self.reasoning_tasks = None
         self.poses = None
         self.name = basename(path_to_narrative_file).split('.')[0]
+        self._path_to_csv = None
 
     def get_reasoning_tasks(self):
         if self.reasoning_tasks is None:
@@ -134,18 +136,18 @@ class Narrative:
         return action_types
 
     def transform_to_csv_file(self, path_destination_dir):
-        path_to_csv = join(path_destination_dir, self.name)
+        self._path_to_csv = join(path_destination_dir, self.name)
 
-        if not exists(path_to_csv):
-            makedirs(path_to_csv)
+        if not exists(self._path_to_csv):
+            makedirs(self._path_to_csv)
 
-        self._write_narrative_vectors_to_csv_file_(path_to_csv)
-        self._write_reasoning_tasks_to_csv_file_(path_to_csv)
-        self._write_poses_to_csv_file_(path_to_csv)
+        self._write_narrative_vectors_to_csv_file_()
+        self._write_reasoning_tasks_to_csv_file_()
+        self._write_poses_to_csv_file_()
 
-    def _write_narrative_vectors_to_csv_file_(self, result_dir_path):
+    def _write_narrative_vectors_to_csv_file_(self):
         vecs = self.toVecs()
-        narrative_path = join(result_dir_path, 'narrative.csv')
+        narrative_path = join(self._path_to_csv, 'narrative.csv')
 
         with open(narrative_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
@@ -154,27 +156,21 @@ class Narrative:
             for vec in vecs:
                 vec_writer.writerow(vec)
 
-    def _write_reasoning_tasks_to_csv_file_(self, result_dir_path):
+    def _write_reasoning_tasks_to_csv_file_(self):
         vecs = self.get_reasoning_tasks()
-        narrative_path = join(result_dir_path, 'reasoning_tasks.csv')
+        csv_file_path = join(self._path_to_csv, 'reasoning_tasks.csv')
 
-        with open(narrative_path, 'wb') as csvfile:
+
+        with open(csv_file_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
             vec_writer.writerow(reasoning_task_table_header.get_definition())
 
             for vec in vecs:
                 vec_writer.writerow(vec)
 
-    def _write_poses_to_csv_file_(self, result_dir_path):
-        vecs = self.get_poses()
-        narrative_path = join(result_dir_path, 'poses.csv')
-
-        with open(narrative_path, 'wb') as csvfile:
-            vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(poses.get_definition())
-
-            for vec in vecs:
-                vec_writer.writerow(vec)
+    def _write_poses_to_csv_file_(self):
+        csv_file_path = join(self._path_to_csv, 'poses.csv')
+        narrative_csv.write(poses.get_definition(), self.get_poses(), csv_file_path)
 
     def _init_graph(self):
         graph = rdflib.Graph()
