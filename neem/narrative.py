@@ -1,3 +1,5 @@
+import csv
+
 import rdflib
 
 from neem.logging_instance.action import Action
@@ -5,6 +7,7 @@ from neem.logging_instance.pose import Pose
 from neem.logging_instance.reasoning_task import ReasoningTask
 from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
 from ontology.ontologyHandler import get_uri
+from os.path import join
 
 
 def get_vector_definition():
@@ -171,6 +174,44 @@ class Narrative:
             action_types.add(str(action_type))
 
         return action_types
+
+    def transform_to_csv_file(self, path_destination_dir):
+        self._write_narrative_vectors_to_csv_file_(path_destination_dir)
+        self._write_reasoning_tasks_to_csv_file_(path_destination_dir)
+        self._write_poses_to_csv_file_(path_destination_dir)
+
+    def _write_narrative_vectors_to_csv_file_(self, result_dir_path):
+        vecs = self.toVecs()
+        narrative_path = join(result_dir_path, 'narrative.csv')
+
+        with open(narrative_path, 'wb') as csvfile:
+            vec_writer = csv.writer(csvfile, delimiter=';')
+            vec_writer.writerow(get_vector_definition())
+
+            for vec in vecs:
+                vec_writer.writerow(vec)
+
+    def _write_reasoning_tasks_to_csv_file_(self, result_dir_path):
+        vecs = self.get_reasoning_tasks()
+        narrative_path = join(result_dir_path, 'reasoning_tasks.csv')
+
+        with open(narrative_path, 'wb') as csvfile:
+            vec_writer = csv.writer(csvfile, delimiter=';')
+            vec_writer.writerow(get_vector_definition())
+
+            for vec in vecs:
+                vec_writer.writerow(vec)
+
+    def _write_poses_to_csv_file_(self, result_dir_path):
+        vecs = self.get_poses()
+        narrative_path = join(result_dir_path, 'poses.csv')
+
+        with open(narrative_path, 'wb') as csvfile:
+            vec_writer = csv.writer(csvfile, delimiter=';')
+            vec_writer.writerow(get_vector_definition())
+
+            for vec in vecs:
+                vec_writer.writerow(vec)
 
     def _init_graph(self):
         graph = rdflib.Graph()
