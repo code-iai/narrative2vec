@@ -9,20 +9,7 @@ from neem.logging_instance.reasoning_task import ReasoningTask
 from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
 from ontology.ontologyHandler import get_uri
 from os.path import join, basename, exists
-from constants import action_table_header, reasoning_task_table_header
-
-
-def get_poses_vector_definition():
-    definition = ['id',
-                  'reasoning_task_id',
-                  't_x',
-                  't_y',
-                  't_z',
-                  'q_x',
-                  'q_y',
-                  'q_z',
-                  'q_w']
-    return definition
+from constants import action_table_header, reasoning_task_table_header, poses
 
 
 class Narrative:
@@ -184,7 +171,7 @@ class Narrative:
 
         with open(narrative_path, 'wb') as csvfile:
             vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(get_poses_vector_definition())
+            vec_writer.writerow(poses.get_definition())
 
             for vec in vecs:
                 vec_writer.writerow(vec)
