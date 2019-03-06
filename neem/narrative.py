@@ -141,20 +141,13 @@ class Narrative:
         if not exists(self._path_to_csv):
             makedirs(self._path_to_csv)
 
-        self._write_narrative_vectors_to_csv_file_()
+        self._write_actions_to_csv_file_()
         self._write_reasoning_tasks_to_csv_file_()
         self._write_poses_to_csv_file_()
 
-    def _write_narrative_vectors_to_csv_file_(self):
-        vecs = self.toVecs()
-        narrative_path = join(self._path_to_csv, 'narrative.csv')
-
-        with open(narrative_path, 'wb') as csvfile:
-            vec_writer = csv.writer(csvfile, delimiter=';')
-            vec_writer.writerow(action_table_header.get_definition())
-
-            for vec in vecs:
-                vec_writer.writerow(vec)
+    def _write_actions_to_csv_file_(self):
+        csv_file_path = join(self._path_to_csv, 'actions.csv')
+        narrative_csv.write(action_table_header.get_definition(), self.toVecs(), csv_file_path)
 
     def _write_reasoning_tasks_to_csv_file_(self):
         csv_file_path = join(self._path_to_csv, 'reasoning_tasks.csv')
