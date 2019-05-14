@@ -27,7 +27,7 @@ setuptools.setup(
     description="Transforms NEEM narrative data into CSV files",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/code-iai/narrative2neem",
+    url="https://github.com/code-iai/narrative2vec",
     packages=setuptools.find_packages(exclude=("test",)),
     include_package_data=True,
     classifiers=[
