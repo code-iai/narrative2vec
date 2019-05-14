@@ -2,7 +2,7 @@ import sys
 
 from os import listdir
 from os.path import isdir, join
-from neem.narrative import Narrative
+from narrative2vec.narrative import Narrative
 
 if __name__ == "__main__":
     args = sys.argv[1:]

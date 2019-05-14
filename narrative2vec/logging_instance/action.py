@@ -1,9 +1,9 @@
-from neem.logging_instance.logging_instance import LoggingInstance
-from neem.ontology.neemNarrativeDefinitions import \
+from narrative2vec.logging_instance.logging_instance import LoggingInstance
+from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
     OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM
 
-from neem.ontology.ontologyHandler import get_suffix_of_uri
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri
 
 
 class Action(LoggingInstance):

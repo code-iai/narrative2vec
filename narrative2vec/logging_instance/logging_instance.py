@@ -1,5 +1,5 @@
-from neem.ontology.neemNarrativeDefinitions import START_TIME, END_TIME
-from neem.ontology.ontologyHandler import get_suffix_of_uri, get_uri
+from narrative2vec.ontology.neemNarrativeDefinitions import START_TIME, END_TIME
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_uri
 
 
 def _get_time_from_timepoint(timepoint):

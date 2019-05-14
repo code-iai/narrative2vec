@@ -1,16 +1,15 @@
-import csv
 from os import makedirs
+from os.path import join, basename, exists
 
 import rdflib
+from narrative2vec.logging_instance.action import Action
+from narrative2vec.logging_instance.pose import Pose
+from narrative2vec.logging_instance.reasoning_task import ReasoningTask
 
-from neem.logging_instance.action import Action
-from neem.logging_instance.pose import Pose
-from neem.logging_instance.reasoning_task import ReasoningTask
+import narrative_csv
+from constants import action_table_header, reasoning_task_table_header, poses
 from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
 from ontology.ontologyHandler import get_uri
-from os.path import join, basename, exists
-from constants import action_table_header, reasoning_task_table_header, poses
-import narrative_csv
 
 
 class Narrative:

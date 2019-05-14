@@ -1,7 +1,7 @@
-from neem.logging_instance.action import Action
-from neem.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
-from neem.ontology.neemNarrativeDefinitions import PREDICATE
-from neem.ontology.ontologyHandler import get_uri
+from narrative2vec.logging_instance.action import Action
+from narrative2vec.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
+from narrative2vec.ontology.neemNarrativeDefinitions import PREDICATE
+from narrative2vec.ontology.ontologyHandler import get_uri
 
 
 class ReasoningTask(LoggingInstance):

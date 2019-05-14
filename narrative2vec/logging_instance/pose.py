@@ -1,7 +1,7 @@
-from neem.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
-from neem.logging_instance.reasoning_task import ReasoningTask
-from neem.ontology.neemNarrativeDefinitions import QUATERNION
-from neem.ontology.ontologyHandler import get_uri
+from narrative2vec.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
+from narrative2vec.logging_instance.reasoning_task import ReasoningTask
+from narrative2vec.ontology.neemNarrativeDefinitions import QUATERNION
+from narrative2vec.ontology.ontologyHandler import get_uri
 
 
 class Pose(LoggingInstance):
