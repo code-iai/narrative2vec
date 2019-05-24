@@ -6,13 +6,13 @@ from narrative2vec.ontology.ontologyHandler import get_uri
 
 class ReasoningTask(LoggingInstance):
     def get_parameters(self):
-        return self._get_property_('parameters')
+        return _clean_query_result_(self._get_property_('parameter'))
 
     def get_predicate(self):
         return self._get_property_(PREDICATE)
 
     def get_result(self):
-        return self._get_property_('result')
+        return _clean_query_result_(self._get_property_('result'))
 
     def get_action_id(self):
         action_property = self._graph_.subjects(get_uri('reasoningTask'), self.uri)
@@ -22,3 +22,9 @@ class ReasoningTask(LoggingInstance):
             return Action(action, self._graph_).get_id()
 
         return ''
+
+
+def _clean_query_result_(query_result):
+    if query_result.startswith('file://'):
+        return query_result.split('/')[-1]
+    return query_result
