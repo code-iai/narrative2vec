@@ -13,4 +13,5 @@ def get_definition():
             'object_type',
             'bodyPartsUsed',
             'arm',
-            'grasp']
+            'grasp',
+            'effort']

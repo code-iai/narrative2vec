@@ -79,7 +79,6 @@ class Narrative:
 
     def toVec(self, action_uri):
         action = Action(action_uri, self._graph_)
-
         vector = [action.get_id()]
         vector.append(action.get_type())
         vector.append(action.get_start_time_())
@@ -112,7 +111,7 @@ class Narrative:
         vector.append(action.get_body_parts_used())
         vector.append(action.get_arm())
         vector.append(action.get_grasp())
-
+        vector.append(action.get_effort())
         return vector
 
     def _query_all_reasoning_tasks_(self):

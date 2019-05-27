@@ -15,7 +15,7 @@ def _get_first_rdf_query_result(result):
     return None
 
 
-class LoggingInstance:
+class LoggingInstance(object):
     def __init__(self, uri, graph):
         self.uri = uri
         self._graph_ = graph
