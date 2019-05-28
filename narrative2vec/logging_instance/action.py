@@ -1,9 +1,9 @@
-from narrative2vec.logging_instance.logging_instance import LoggingInstance
+from narrative2vec.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
 from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
     OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT
 
-from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_uri
 
 
 class Action(LoggingInstance):
@@ -12,7 +12,9 @@ class Action(LoggingInstance):
         self._equated_action = self.get_equated_action()
 
     def get_parent_action(self):
-        parent_uri = self._get_property_(SUB_ACTION)
+        action_property = self._graph_.subjects(get_uri(SUB_ACTION), self.uri)
+        parent_uri = _get_first_rdf_query_result(action_property)
+
         return self._turn_uri_into_action(parent_uri)
 
     def get_next_action(self):

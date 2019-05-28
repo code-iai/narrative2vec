@@ -90,19 +90,19 @@ class Narrative:
         parent = action.get_parent_action()
 
         if parent:
-            vector.append(parent.get_type())
+            vector.append(parent.get_id())
         else:
             vector.append('')
 
         next_action = action.get_next_action()
         if next_action:
-            vector.append(next_action.get_type())
+            vector.append(next_action.get_id())
         else:
             vector.append('')
 
         previous_action = action.get_previous_action()
         if previous_action:
-            vector.append(previous_action.get_type())
+            vector.append(previous_action.get_id())
         else:
             vector.append('')
 
