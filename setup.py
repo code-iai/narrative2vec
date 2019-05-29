@@ -21,7 +21,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="narrative2vec",
-    version="4.0.0",
+    version="4.0.1",
     author="Sebastian Koralewski",
     author_email="seba@cs.uni-bremen.de",
     description="Transforms NEEM narrative data into CSV files",
