@@ -27,7 +27,7 @@ class Action(LoggingInstance):
         object_acted_on = self._get_property_(OBJECT_ACTED_ON)
 
         if object_acted_on:
-            object_acted_on = object_acted_on.split('/')[-1].split("-")[0]
+            object_acted_on = object_acted_on.split('/')[-1]
         elif self._equated_action:
             object_acted_on = self._equated_action.get_object_acted_on()
 
@@ -37,7 +37,7 @@ class Action(LoggingInstance):
         object_type = self._get_property_(OBJECT_TYPE)
 
         if object_type:
-            object_type = object_type.split('/')[-1].split("-")[0]
+            object_type = object_type.split('/')[-1]
         elif self._equated_action:
             object_type = self._equated_action.get_object_type()
 
