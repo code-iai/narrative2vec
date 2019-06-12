@@ -69,49 +69,45 @@ class Narrative:
 
     def toVecs(self):
         actions = self.get_all_actions()
-
-        vecs = []
-
-        for action in actions:
-            vecs.append(self.toVec(action))
-
-        return vecs
+        return map(self.toVec, actions)
 
     def toVec(self, action_uri):
         action = Action(action_uri, self._graph_)
-        vector = [action.get_id()]
-        vector.append(action.get_type())
-        vector.append(action.get_start_time_())
-        vector.append(action.get_end_time())
-        vector.append(action.get_end_time() - action.get_start_time_())
-        vector.append(action.is_successful())
-        vector.append(action.get_failure())
+        action_start_time = action.get_start_time_()
+        action_end_time = action.get_end_time()
 
-        parent = action.get_parent_action()
+        vector = [
+            action.get_id(),
+            action.get_type(),
+            action_start_time,
+            action_end_time,
+            action_end_time - action_start_time,
+            action.is_successful(),
+            action.get_failure(),
+            '',
+            '',
+            '',
+            action.get_object_acted_on(),
+            action.get_object_type(),
+            action.get_body_parts_used(),
+            action.get_arm(),
+            action.get_grasp(),
+            action.get_effort()
+        ]
 
-        if parent:
-            vector.append(parent.get_id())
-        else:
-            vector.append('')
+        try:
+            vector[7] = action.get_parent_action().get_id()
+        except AttributeError:
+            pass
+        try:
+            vector[8] = action.get_next_action().get_id()
+        except AttributeError:
+            pass
+        try:
+            vector[9] = action.get_previous_action().get_id()
+        except AttributeError:
+            pass
 
-        next_action = action.get_next_action()
-        if next_action:
-            vector.append(next_action.get_id())
-        else:
-            vector.append('')
-
-        previous_action = action.get_previous_action()
-        if previous_action:
-            vector.append(previous_action.get_id())
-        else:
-            vector.append('')
-
-        vector.append(action.get_object_acted_on())
-        vector.append(action.get_object_type())
-        vector.append(action.get_body_parts_used())
-        vector.append(action.get_arm())
-        vector.append(action.get_grasp())
-        vector.append(action.get_effort())
         return vector
 
     def _query_all_reasoning_tasks_(self):
