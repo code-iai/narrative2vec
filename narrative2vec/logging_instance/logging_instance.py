@@ -7,12 +7,10 @@ def _get_time_from_timepoint(timepoint):
 
 
 def _get_first_rdf_query_result(result):
-    result_list = list(result)
-
-    if result_list:
-        return result_list[0]
-
-    return None
+    try:
+        return list(result)[0]
+    except IndexError:
+        return None
 
 
 class LoggingInstance(object):
