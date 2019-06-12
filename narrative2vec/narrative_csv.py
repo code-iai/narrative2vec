@@ -6,5 +6,4 @@ def write(header, rows, csv_file_path):
         writer = csv.writer(csvfile, delimiter=';')
         writer.writerow(header)
 
-        for row in rows:
-            writer.writerow(row)
+        map(writer.writerow, rows)
