@@ -1,7 +1,14 @@
 language: python
 python:
-  - '2.7'
+- '2.7'
 install:
-  - 'pip install pipenv'
-  - 'pipenv install --ignore-pipfile'
-script: 'pipenv run pytest'
+- pip install pipenv
+- pipenv install --ignore-pipfile
+script: pipenv run pytest
+deploy:
+  provider: pypi
+  user: "code-iai"
+  password:
+    secure: GvSJBiDDfPaKSdhEzRq3SY50zPkYUZ0bulFyp3K0FsPnxedFoc+K0ivq+m8+oRfaAnOxZO26zx6pMZ83WhQNhdNxyXDMWxbgfVh3QKOhFtDzEBFChhjpqP948ezOb6LJ6hLF8usO45B5ZRcyt9FzvdrpaSRGceG3beprCgbFefQXgZTwumrGXpTRPnP68DH2hpVy/eGNpnRqsCUIPvqrgtq2MVjjFQb5viMT8skeM/3zM6SjF/AIOjaGf3B24mTTjQ+v1m287SHxyZ6GcCdx2oWz9VyrLArTCMMLENoWTnvPgUnnWQzOz2rCpnsAKyJMU8APq7qwORaSibeFAxKZVe8ncAA0su4x5KQPt4JUzKRzTZ9XfijfpbT+jjIG+VzsvoXxltlNUR8W1Zn19bOEDKsbzYwENppdSqxi85Y94jTV5AJK91XdNT39rYoZvkwwUQWN7TfOWZn+JlMFwfdFjvUR2Oi91EVUNlI6bTLk+w5iOxNu4B6jslmRqC58ilO6ocOzWbFTtqQb/+6SVT8a0GnQpc4jANd+vO2YP6h812Jlve1yS8fP5j2bFFHIbohZpFlFUVZZrrWOjhbCibfNqlAQJQJV6dhMolvDuelkM0bxQY5Z4LmTtLfop3zncx7rQZA4MvuOtOUvOWGjQkv9C5r0GXxBN56sx4iGxm0spfg=
+  on:
+    tags: true
