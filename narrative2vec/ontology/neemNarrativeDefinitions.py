@@ -1,4 +1,4 @@
-PERFORMED_IN_PROJECTION = 'performedInProjection'
+IS_EXECUTED_IN = 'isExecutedIn'
 REASONING_TASK = 'reasoningTask'
 END_TIME = 'endTime'
 START_TIME = 'startTime'

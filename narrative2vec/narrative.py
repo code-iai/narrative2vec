@@ -8,8 +8,8 @@ from narrative2vec.logging_instance.reasoning_task import ReasoningTask
 
 import narrative_csv
 from constants import action_table_header, reasoning_task_table_header, poses
-from ontology.neemNarrativeDefinitions import PERFORMED_IN_PROJECTION, PREDICATE, QUATERNION
-from ontology.ontologyHandler import get_uri
+from ontology.neemNarrativeDefinitions import IS_EXECUTED_IN, PREDICATE, QUATERNION
+from ontology.ontologyHandler import get_knowrob_uri, get_dul_uri
 
 
 class Narrative:
@@ -111,13 +111,13 @@ class Narrative:
         return vector
 
     def _query_all_reasoning_tasks_(self):
-        return self._graph_.subjects(predicate=get_uri(PREDICATE))
+        return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        return self._graph_.subjects(predicate=get_uri(QUATERNION))
+        return self._graph_.subjects(predicate=get_knowrob_uri(QUATERNION))
 
     def get_all_actions(self):
-        return self._graph_.subjects(predicate=get_uri(PERFORMED_IN_PROJECTION))
+        return self._graph_.subjects(predicate=get_dul_uri(IS_EXECUTED_IN))
 
     def get_all_action_types(self):
         action_types = set()

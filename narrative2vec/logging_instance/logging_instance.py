@@ -1,5 +1,5 @@
 from narrative2vec.ontology.neemNarrativeDefinitions import START_TIME, END_TIME
-from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_uri
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri
 
 
 def _get_time_from_timepoint(timepoint):
@@ -36,5 +36,5 @@ class LoggingInstance(object):
         return 0.0
 
     def _get_property_(self, uri_prefix):
-        action_property = self._graph_.objects(self.uri, get_uri(uri_prefix))
+        action_property = self._graph_.objects(self.uri, get_knowrob_uri(uri_prefix))
         return _get_first_rdf_query_result(action_property)
