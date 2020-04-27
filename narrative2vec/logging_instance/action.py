@@ -7,12 +7,12 @@ from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowro
 
 
 class Action(LoggingInstance):
-    def __init__(self, uri, graph):
-        super(Action, self).__init__(uri, graph)
+    def __init__(self, context, graph):
+        super(Action, self).__init__(context, graph)
         self._equated_action = self.get_equated_action()
 
     def get_parent_action(self):
-        action_property = self._graph_.subjects(get_knowrob_uri(SUB_ACTION), self.uri)
+        action_property = self._graph_.subjects(get_knowrob_uri(SUB_ACTION), self.context)
         parent_uri = _get_first_rdf_query_result(action_property)
 
         return self._turn_uri_into_action(parent_uri)
@@ -99,13 +99,9 @@ class Action(LoggingInstance):
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW
-        return get_suffix_of_uri(self.uri).split('_')[0]
+        return get_suffix_of_uri(self.context).split('_')[0]
 
     def get_equated_action(self):
-        equated_designator = self._get_property_(EQUATE)
-        if equated_designator:
-            return Action(equated_designator, self._graph_)
-
         return None
 
     # def get_additional_parameters_from_equated_designator(self):

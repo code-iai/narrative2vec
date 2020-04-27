@@ -14,7 +14,7 @@ class Pose(LoggingInstance):
         return read_orientation.strip().split()
 
     def get_reasoning_task__id(self):
-        reasoning_task_property = self._graph_.subjects(get_knowrob_uri('parameter2'), self.uri)
+        reasoning_task_property = self._graph_.subjects(get_knowrob_uri('parameter2'), self.context)
         reasoning_task = _get_first_rdf_query_result(reasoning_task_property)
 
         if reasoning_task and not reasoning_task.startswith('file://'):

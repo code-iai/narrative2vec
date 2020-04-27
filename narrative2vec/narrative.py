@@ -3,12 +3,13 @@ from os.path import join, basename, exists
 
 import rdflib
 from narrative2vec.logging_instance.action import Action
+from narrative2vec.logging_instance.logging_context import LoggingContext
 from narrative2vec.logging_instance.pose import Pose
 from narrative2vec.logging_instance.reasoning_task import ReasoningTask
 
 import narrative_csv
 from constants import action_table_header, reasoning_task_table_header, poses
-from ontology.neemNarrativeDefinitions import IS_EXECUTED_IN, PREDICATE, QUATERNION
+from ontology.neemNarrativeDefinitions import IS_EXECUTED_IN, PREDICATE, QUATERNION, INCLUDES_ACTION
 from ontology.ontologyHandler import get_knowrob_uri, get_dul_uri
 
 
@@ -71,8 +72,8 @@ class Narrative:
         actions = self.get_all_actions()
         return map(self.toVec, actions)
 
-    def toVec(self, action_uri):
-        action = Action(action_uri, self._graph_)
+    def toVec(self, action_context):
+        action = Action(action_context, self._graph_)
         action_start_time = action.get_start_time_()
         action_end_time = action.get_end_time()
 
@@ -117,7 +118,10 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(QUATERNION))
 
     def get_all_actions(self):
-        return self._graph_.subjects(predicate=get_dul_uri(IS_EXECUTED_IN))
+        result = list(self._graph_.subject_objects(predicate=get_dul_uri(IS_EXECUTED_IN)))
+        plan_uris = [list(self._graph_.subjects(predicate=get_dul_uri(INCLUDES_ACTION), object=x[1]))[0] for x in result]
+
+        return [LoggingContext(plan_uris[x],y[1], y[0]) for x, y in enumerate(result)]
 
     def get_all_action_types(self):
         action_types = set()

@@ -1,5 +1,9 @@
-from uriDefinitions import KNOWROB_URI, DUL_URI
+from uriDefinitions import KNOWROB_URI, DUL_URI, EASE_URI
 from rdflib.term import URIRef
+
+
+def get_ease_uri(suffix):
+    return _build_uri_ref_with_suffix(EASE_URI, suffix)
 
 
 def get_dul_uri(suffix):

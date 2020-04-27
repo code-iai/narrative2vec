@@ -15,7 +15,7 @@ class ReasoningTask(LoggingInstance):
         return _clean_query_result_(self._get_property_('result'))
 
     def get_action_id(self):
-        action_property = self._graph_.subjects(get_knowrob_uri('reasoningTask'), self.uri)
+        action_property = self._graph_.subjects(get_knowrob_uri('reasoningTask'), self.context)
         action = _get_first_rdf_query_result(action_property)
 
         if action and not action.startswith('file://'):
