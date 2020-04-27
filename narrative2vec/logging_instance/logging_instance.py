@@ -19,7 +19,7 @@ class LoggingInstance(object):
         self._graph_ = graph
 
     def get_id(self):
-        return get_suffix_of_uri(self.context)
+        return get_suffix_of_uri(self.context.plan_uri)
 
     def get_start_time_(self):
         return self._get_time_(START_TIME)

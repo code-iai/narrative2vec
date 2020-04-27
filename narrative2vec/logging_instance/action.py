@@ -99,7 +99,7 @@ class Action(LoggingInstance):
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW
-        return get_suffix_of_uri(self.context).split('_')[0]
+        return get_suffix_of_uri(self.context.type_uri).split('_')[0]
 
     def get_equated_action(self):
         return None

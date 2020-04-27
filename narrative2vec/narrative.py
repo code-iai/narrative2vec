@@ -83,31 +83,50 @@ class Narrative:
             action_start_time,
             action_end_time,
             action_end_time - action_start_time,
-            action.is_successful(),
-            action.get_failure(),
             '',
             '',
             '',
-            action.get_object_acted_on(),
-            action.get_object_type(),
-            action.get_body_parts_used(),
-            action.get_arm(),
-            action.get_grasp(),
-            action.get_effort()
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
         ]
 
-        try:
-            vector[7] = action.get_parent_action().get_id()
-        except AttributeError:
-            pass
-        try:
-            vector[8] = action.get_next_action().get_id()
-        except AttributeError:
-            pass
-        try:
-            vector[9] = action.get_previous_action().get_id()
-        except AttributeError:
-            pass
+        # vector = [
+        #     action.get_id(),
+        #     action.get_type(),
+        #     action_start_time,
+        #     action_end_time,
+        #     action_end_time - action_start_time,
+        #     action.is_successful(),
+        #     action.get_failure(),
+        #     '',
+        #     '',
+        #     '',
+        #     action.get_object_acted_on(),
+        #     action.get_object_type(),
+        #     action.get_body_parts_used(),
+        #     action.get_arm(),
+        #     action.get_grasp(),
+        #     action.get_effort()
+        # ]
+
+        # try:
+        #     vector[7] = action.get_parent_action().get_id()
+        # except AttributeError:
+        #     pass
+        # try:
+        #     vector[8] = action.get_next_action().get_id()
+        # except AttributeError:
+        #     pass
+        # try:
+        #     vector[9] = action.get_previous_action().get_id()
+        # except AttributeError:
+        #     pass
 
         return vector
 
@@ -140,8 +159,8 @@ class Narrative:
             makedirs(self._path_to_csv)
 
         self._write_actions_to_csv_file_()
-        self._write_reasoning_tasks_to_csv_file_()
-        self._write_poses_to_csv_file_()
+        #self._write_reasoning_tasks_to_csv_file_()
+        #self._write_poses_to_csv_file_()
 
     def _write_actions_to_csv_file_(self):
         csv_file_path = join(self._path_to_csv, 'actions.csv')
