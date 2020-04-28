@@ -31,7 +31,10 @@ class LoggingInstance(object):
         time_instance = self._get_plan_property_(get_dul_uri(INCLUDES_TIME))
         if time_instance:
             time = _get_first_rdf_query_result(self._graph_.objects(time_instance, get_ease_uri(time_type)))
-            return _get_time_from_timepoint(time)
+            if time is not None:
+                return _get_time_from_timepoint(time)
+            else:
+                return 0.0
 
         return 0.0
 

@@ -1,3 +1,4 @@
+SATISFIES = 'satisfies'
 INCLUDES_TIME = 'includesTime'
 INCLUDES_ACTION = 'includesAction'
 IS_EXECUTED_IN = 'isExecutedIn'

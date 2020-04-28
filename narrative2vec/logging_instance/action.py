@@ -1,9 +1,9 @@
 from narrative2vec.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
 from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
-    OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT
+    OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES
 
-from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri
 
 
 class Action(LoggingInstance):
@@ -71,9 +71,12 @@ class Action(LoggingInstance):
             return self._equated_action.get_arm()
 
     def get_failure(self):
-        failure = self._get_property_(FAILURE)
+        failure = self._get_plan_property_(get_dul_uri(SATISFIES))
 
-        return failure
+        if failure:
+            return get_suffix_of_uri(str(failure))
+        else:
+            return ''
 
     def get_effort(self):
         effort = self._get_property_(EFFORT)
@@ -93,9 +96,9 @@ class Action(LoggingInstance):
         return None
 
     def is_successful(self):
-        value = self._get_property_(TASK_SUCCESS)
+        value = self._get_plan_property_(get_dul_uri(SATISFIES))
 
-        return str(value) == 'true'
+        return value is None
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW
@@ -103,29 +106,3 @@ class Action(LoggingInstance):
 
     def get_equated_action(self):
         return None
-
-    # def get_additional_parameters_from_equated_designator(self):
-    #     equated_designator = self._get_property_(EQUATE)
-    #     additional_parameters = {}
-    #
-    #     if equated_designator:
-    #         equated_designator_predicates = set([x[0] for x in list(self._graph_.predicate_objects(equated_designator))])
-    #         action_predicate = set([x[0] for x in list(self._graph_.predicate_objects(self.uri))])
-    #         additional_predicates = equated_designator_predicates.difference(action_predicate)
-    #         if additional_predicates:
-    #             equated_action = Action(equated_designator, self._graph_)
-    #             for additional_predicate in additional_predicates:
-    #                 predicate_name = get_suffix_of_uri(additional_predicate)
-    #                 if predicate_name == ARM:
-    #                     additional_parameters[predicate_name] = equated_action.get_arm()
-    #                 elif predicate_name == EFFORT:
-    #                     additional_parameters[predicate_name] = equated_action.get_arm()
-    #                 elif predicate_name == OBJECT_TYPE:
-    #                     print 'OBJECT_TYPE'
-    #                 elif predicate_name == GRASP:
-    #                     print 'GRASP'
-    #
-    #             print " "
-    #         return equated_designator_predicates
-    #
-    #     return additional_parameters
