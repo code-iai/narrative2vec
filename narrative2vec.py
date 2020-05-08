@@ -6,18 +6,20 @@ from narrative2vec.narrative import Narrative
 
 
 import rospy
-import readline
-import sys
 from rosprolog_client import PrologException, Prolog
+import narrative2vec.knowrob_communication.knowrob_talker as talker
 
 if __name__ == "__main__":
-    prolog = Prolog()
-    rospy.init_node('narrative2vec', anonymous=True)
-    while not rospy.is_shutdown():
-        with prolog.query("rdf_has(Action, dul:'isExecutedIn', _).") as query:
-            for solution in query.solutions():
-                print solution
-        rospy.signal_shutdown("Done processing NEEM.")
+    talker.init_knowrob_talker()
+    talker.get_all_solutions("rdf_has(Action, dul:'isExecutedIn', _).")
+    talker.close()
+    # prolog = Prolog()
+    # rospy.init_node('narrative2vec', anonymous=True)
+    # while not rospy.is_shutdown():
+    #     with prolog.query() as query:
+    #         for solution in query.solutions():
+    #             print solution
+    #     rospy.signal_shutdown("Done processing NEEM.")
         # args = sys.argv[1:]
     # path = args[0]
     # result_dir_path = args[1]
