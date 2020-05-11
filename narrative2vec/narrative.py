@@ -1,7 +1,7 @@
 from os import makedirs
 from os.path import join, basename, exists
 
-import rdflib
+from ontology import graph
 from narrative2vec.logging_instance.action import Action
 from narrative2vec.logging_instance.logging_context import LoggingContext
 from narrative2vec.logging_instance.pose import Pose
@@ -16,11 +16,21 @@ from ontology.ontologyHandler import get_knowrob_uri, get_dul_uri
 class Narrative:
     def __init__(self, path_to_narrative_file):
         self._pathToNarrativeFile_ = path_to_narrative_file
-        self._graph_ = self._init_graph()
+        self._graph_ = None
         self.reasoning_tasks = None
+        self.is_open = False
         self.poses = None
         self.name = basename(path_to_narrative_file).split('.')[0]
         self._path_to_csv = None
+
+    def open(self):
+        self._graph_ = self._init_graph()
+        self.is_open = True
+
+    def close(self):
+        if self.is_open:
+            self._graph_.close()
+            self.is_open = False
 
     def get_reasoning_tasks(self):
         if self.reasoning_tasks is None:
@@ -162,6 +172,7 @@ class Narrative:
         #self._write_reasoning_tasks_to_csv_file_()
         #self._write_poses_to_csv_file_()
 
+
     def _write_actions_to_csv_file_(self):
         csv_file_path = join(self._path_to_csv, 'actions.csv')
         narrative_csv.write(action_table_header.get_definition(), self.toVecs(), csv_file_path)
@@ -175,7 +186,7 @@ class Narrative:
         narrative_csv.write(poses.get_definition(), self.get_poses(), csv_file_path)
 
     def _init_graph(self):
-        graph = rdflib.Graph()
+        graph.init()
         graph.load(self._pathToNarrativeFile_)
         return graph
 

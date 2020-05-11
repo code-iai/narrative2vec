@@ -1,3 +1,5 @@
+import itertools
+
 import rospy
 from rosprolog_client import PrologException, Prolog
 
@@ -13,6 +15,11 @@ def init_knowrob_talker():
 def _send_query(query):
     if _is_talker_alive():
         return _prolog.query(query)
+
+
+def get_first_solution(query_str):
+    with _send_query(query_str) as query:
+        return list(itertools.islice(query.solutions(), 1))
 
 
 def get_all_solutions(query_str):

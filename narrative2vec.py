@@ -1,12 +1,3 @@
-import sys
-
-from os import listdir
-from os.path import isdir, join
-from narrative2vec.narrative import Narrative
-
-
-import rospy
-from rosprolog_client import PrologException, Prolog
 import narrative2vec.knowrob_communication.knowrob_talker as talker
 
 if __name__ == "__main__":
