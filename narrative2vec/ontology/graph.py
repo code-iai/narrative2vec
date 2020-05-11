@@ -7,7 +7,7 @@ def init():
 
 def load(path_to_narrative_file):
     query = "mem_import('{}').".format(path_to_narrative_file)
-    #return talker.get_first_solution(query)
+    talker.get_all_solutions(query)
 
 
 def subjects_objects(predicate_uri):
