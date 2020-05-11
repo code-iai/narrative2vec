@@ -30,9 +30,11 @@ class LoggingInstance(object):
     def _get_time_(self, time_type):
         time_instance = self._get_plan_property_(get_dul_uri(INCLUDES_TIME))
         if time_instance:
-            time = _get_first_rdf_query_result(self._graph_.objects(time_instance, get_ease_uri(time_type)))
-            if time is not None:
-                return _get_time_from_timepoint(time)
+            time = self._graph_.objects(time_instance, get_ease_uri(time_type))
+            if len(time) > 0:
+                time = time[0]
+                time_number = time.get('term')[1].get('term')[2]
+                return _get_time_from_timepoint(time_number)
             else:
                 return 0.0
 
@@ -43,4 +45,7 @@ class LoggingInstance(object):
 
     def _get_property_(self, context_uri, uri):
         action_property = self._graph_.objects(context_uri, uri)
-        return _get_first_rdf_query_result(action_property)
+        if len(action_property) == 0:
+            return None
+        else:
+            return action_property[0]

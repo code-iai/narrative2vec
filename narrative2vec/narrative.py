@@ -147,8 +147,8 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(QUATERNION))
 
     def get_all_actions(self):
-        result = list(self._graph_.subject_objects(predicate=get_dul_uri(IS_EXECUTED_IN)))
-        plan_uris = [list(self._graph_.subjects(predicate=get_dul_uri(INCLUDES_ACTION), object=x[1]))[0] for x in result]
+        result = [x for x in self._graph_.subjects_objects(get_dul_uri(IS_EXECUTED_IN))]
+        plan_uris = [self._graph_.subjects(get_dul_uri(INCLUDES_ACTION), x[1])[0] for x in result]
 
         return [LoggingContext(plan_uris[x],y[1], y[0]) for x, y in enumerate(result)]
 

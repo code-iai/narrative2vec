@@ -17,11 +17,6 @@ def _send_query(query):
         return _prolog.query(query)
 
 
-def get_first_solution(query_str):
-    with _send_query(query_str) as query:
-        return list(itertools.islice(query.solutions(), 1))
-
-
 def get_all_solutions(query_str):
     with _send_query(query_str) as query:
         return [x for x in query.solutions()]
