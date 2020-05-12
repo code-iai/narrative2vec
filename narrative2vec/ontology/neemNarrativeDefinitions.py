@@ -1,3 +1,8 @@
+GRASPING_ORIENTATION = 'GraspingOrientation'
+GRASPING_ORIENTATION_REGION = 'GraspingOrientationRegion'
+IS_SETTING_FOR = 'isSettingFor'
+INCLUDES_CONCEPT = 'includesConcept'
+HAS_PARAMETER = 'hasParameter'
 SATISFIES = 'satisfies'
 INCLUDES_TIME = 'includesTime'
 INCLUDES_ACTION = 'includesAction'

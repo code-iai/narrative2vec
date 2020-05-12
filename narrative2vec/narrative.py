@@ -102,7 +102,7 @@ class Narrative:
             '',
             '',
             '',
-            '',
+            action.get_grasp(),
             '',
         ]
 

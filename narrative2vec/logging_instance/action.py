@@ -1,9 +1,10 @@
 from narrative2vec.logging_instance.logging_instance import LoggingInstance, _get_first_rdf_query_result
 from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
-    OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES
+    OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES, HAS_PARAMETER, \
+    INCLUDES_CONCEPT, IS_SETTING_FOR, GRASPING_ORIENTATION_REGION, GRASPING_ORIENTATION
 
-from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri
+from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri, get_ease_uri
 
 
 class Action(LoggingInstance):
@@ -44,12 +45,23 @@ class Action(LoggingInstance):
         return object_type
 
     def get_grasp(self):
-        grasp = self._get_property_(GRASP)
+        grasp = self.get_type_property(get_dul_uri(HAS_PARAMETER))
 
-        if grasp and str(grasp) != 'NIL':
-            grasp = grasp.split(':')[1]
-        elif self._equated_action:
-            grasp = self._equated_action.get_grasp()
+        if grasp and self._graph_.is_concept_type_of(grasp, get_ease_uri(GRASPING_ORIENTATION)):
+            query = "rdf_has(S,'{}', '{}')," \
+                    "rdf_has(S,'{}', R)," \
+                    " rdfs_individual_of(R,'{}')."\
+                    .format(get_ease_uri(INCLUDES_CONCEPT),
+                            grasp,
+                            get_dul_uri(IS_SETTING_FOR),
+                            get_ease_uri(GRASPING_ORIENTATION_REGION))
+
+            solutions = self._graph_.send_query(query)
+            if len(solutions) == 1:
+                grasp = solutions[0].get('R')
+                if grasp:
+                    #'http://www.ease-crc.org/ont/EASE.owl#FrontGrasp_TUYVDNPS'
+                    grasp = get_suffix_of_uri(grasp).split('Grasp_')[0]
 
         return grasp
 
