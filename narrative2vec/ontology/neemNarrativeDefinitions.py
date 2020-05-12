@@ -1,3 +1,5 @@
+DESIGNED_ARTIFACT = 'DesignedArtifact'
+INCLUDES_OBJECT = 'includesObject'
 GRASPING_ORIENTATION = 'GraspingOrientation'
 GRASPING_ORIENTATION_REGION = 'GraspingOrientationRegion'
 IS_SETTING_FOR = 'isSettingFor'

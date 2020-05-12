@@ -2,7 +2,8 @@ from narrative2vec.logging_instance.logging_instance import LoggingInstance, _ge
 from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
     OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES, HAS_PARAMETER, \
-    INCLUDES_CONCEPT, IS_SETTING_FOR, GRASPING_ORIENTATION_REGION, GRASPING_ORIENTATION
+    INCLUDES_CONCEPT, IS_SETTING_FOR, GRASPING_ORIENTATION_REGION, GRASPING_ORIENTATION, DESIGNED_ARTIFACT, \
+    INCLUDES_OBJECT
 
 from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri, get_ease_uri
 
@@ -11,6 +12,33 @@ class Action(LoggingInstance):
     def __init__(self, context, graph):
         super(Action, self).__init__(context, graph)
         self._equated_action = self.get_equated_action()
+        self._object_map = self._init_object_map()
+
+    def _init_object_map(self):
+        result = {}
+        query = "rdfs_individual_of(R,'{}').".format(get_dul_uri(DESIGNED_ARTIFACT))
+        solutions = self._graph_.send_query(query)
+
+        for solution in solutions:
+            object_uri = solution.get('R')
+            object_id = get_suffix_of_uri(object_uri)
+            object_type = self._get_object_type(object_id)
+            result[object_uri] = object_type
+
+        return result
+
+    def _get_object_type(self, object_id):
+        object_type = object_id.split('_')[0]
+
+        if object_type == DESIGNED_ARTIFACT:
+            query = "rdf_has('{}', rdfs:'comment', R).".format(get_dul_uri(object_id))
+            solutions = self._graph_.send_query(query)
+
+            if len(solutions) == 1:
+                solution = solutions[0].get('R')
+                object_type = solution.split('%22')[1]
+
+        return object_type
 
     def get_parent_action(self):
         action_property = self._graph_.subjects(get_knowrob_uri(SUB_ACTION), self.context)
@@ -25,22 +53,16 @@ class Action(LoggingInstance):
         return self._get_sibling_action_(PREVIOUS_ACTION)
 
     def get_object_acted_on(self):
-        object_acted_on = self._get_property_(OBJECT_ACTED_ON)
-
-        if object_acted_on:
-            object_acted_on = object_acted_on.split('/')[-1]
-        elif self._equated_action:
-            object_acted_on = self._equated_action.get_object_acted_on()
+        object_acted_on = self._get_plan_property_(get_dul_uri(INCLUDES_OBJECT))
+        if object_acted_on is not None:
+            object_acted_on = get_suffix_of_uri(object_acted_on)
 
         return object_acted_on
 
     def get_object_type(self):
-        object_type = self._get_property_(OBJECT_TYPE)
-
-        if object_type:
-            object_type = object_type.split('/')[-1]
-        elif self._equated_action:
-            object_type = self._equated_action.get_object_type()
+        object_type = self._get_plan_property_(get_dul_uri(INCLUDES_OBJECT))
+        if object_type is not None:
+            object_type = self._object_map.get(object_type)
 
         return object_type
 
