@@ -12,6 +12,7 @@ def init_knowrob_talker():
     rospy.init_node('narrative2vec', anonymous=True)
 
 
+
 def _send_query(query):
     if _is_talker_alive():
         return _prolog.query(query)

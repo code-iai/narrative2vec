@@ -23,14 +23,9 @@ class Narrative:
         self.name = basename(path_to_narrative_file).split('.')[0]
         self._path_to_csv = None
 
-    def open(self):
+    def load(self):
         self._graph_ = self._init_graph()
         self.is_open = True
-
-    def close(self):
-        if self.is_open:
-            self._graph_.close()
-            self.is_open = False
 
     def get_reasoning_tasks(self):
         if self.reasoning_tasks is None:
@@ -186,7 +181,6 @@ class Narrative:
         narrative_csv.write(poses.get_definition(), self.get_poses(), csv_file_path)
 
     def _init_graph(self):
-        graph.init()
         graph.load(self._pathToNarrativeFile_)
         return graph
 
