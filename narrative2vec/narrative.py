@@ -143,9 +143,8 @@ class Narrative:
 
     def get_all_actions(self):
         result = [x for x in self._graph_.subjects_objects(get_dul_uri(IS_EXECUTED_IN))]
-        plan_uris = [self._graph_.subjects(get_dul_uri(INCLUDES_ACTION), x[1])[0] for x in result]
 
-        return [LoggingContext(plan_uris[x],y[1], y[0]) for x, y in enumerate(result)]
+        return [LoggingContext(action, task) for action, task in result]
 
     def get_all_action_types(self):
         action_types = set()

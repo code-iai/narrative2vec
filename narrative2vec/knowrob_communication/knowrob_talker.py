@@ -15,6 +15,7 @@ def init_knowrob_talker():
 
 def _send_query(query):
     if _is_talker_alive():
+        print 'Query:{}'.format(query)
         return _prolog.query(query)
     else:
         print 'Cannot send query because talker is not alive.'

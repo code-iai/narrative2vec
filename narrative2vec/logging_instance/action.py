@@ -11,12 +11,11 @@ from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowro
 class Action(LoggingInstance):
     def __init__(self, context, graph):
         super(Action, self).__init__(context, graph)
-        self._equated_action = self.get_equated_action()
         self._object_map = self._init_object_map()
 
     def _init_object_map(self):
         result = {}
-        query = "rdfs_individual_of(R,'{}').".format(get_dul_uri(DESIGNED_ARTIFACT))
+        query = "ask(instance_of(R,'{}')).".format(get_dul_uri(DESIGNED_ARTIFACT))
         solutions = self._graph_.send_query(query)
 
         for solution in solutions:
@@ -53,14 +52,14 @@ class Action(LoggingInstance):
         return self._get_sibling_action_(PREVIOUS_ACTION)
 
     def get_object_acted_on(self):
-        object_acted_on = self._get_plan_property_(get_dul_uri(INCLUDES_OBJECT))
+        object_acted_on = self._get_action_property_(get_dul_uri(INCLUDES_OBJECT))
         if object_acted_on is not None:
             object_acted_on = get_suffix_of_uri(object_acted_on)
 
         return object_acted_on
 
     def get_object_type(self):
-        object_type = self._get_plan_property_(get_dul_uri(INCLUDES_OBJECT))
+        object_type = self._get_action_property_(get_dul_uri(INCLUDES_OBJECT))
         if object_type is not None:
             object_type = self._object_map.get(object_type)
 
@@ -70,17 +69,13 @@ class Action(LoggingInstance):
         grasp = self.get_type_property(get_dul_uri(HAS_PARAMETER))
 
         if grasp and self._graph_.is_concept_type_of(grasp, get_ease_uri(GRASPING_ORIENTATION)):
-            query = "rdf_has(S,'{}', '{}')," \
-                    "rdf_has(S,'{}', R)," \
-                    " rdfs_individual_of(R,'{}')."\
-                    .format(get_ease_uri(INCLUDES_CONCEPT),
-                            grasp,
-                            get_dul_uri(IS_SETTING_FOR),
-                            get_ease_uri(GRASPING_ORIENTATION_REGION))
+            query = "ask(triple('{}','{}', O))."\
+                    .format(grasp,
+                            get_dul_uri(INCLUDES_CONCEPT))
 
             solutions = self._graph_.send_query(query)
             if len(solutions) == 1:
-                grasp = solutions[0].get('R')
+                grasp = solutions[0].get('O')
                 if grasp:
                     #'http://www.ease-crc.org/ont/EASE.owl#FrontGrasp_TUYVDNPS'
                     grasp = get_suffix_of_uri(grasp).split('Grasp_')[0]
@@ -105,12 +100,13 @@ class Action(LoggingInstance):
             return self._equated_action.get_arm()
 
     def get_failure(self):
-        failure = self._get_plan_property_(get_dul_uri(SATISFIES))
-
-        if failure:
-            return get_suffix_of_uri(str(failure))
-        else:
-            return ''
+        return ''
+        # failure = self._get_action_property_(get_dul_uri(SATISFIES))
+        #
+        # if failure:
+        #     return get_suffix_of_uri(str(failure))
+        # else:
+        #     return ''
 
     def get_effort(self):
         effort = self._get_property_(EFFORT)
@@ -130,13 +126,10 @@ class Action(LoggingInstance):
         return None
 
     def is_successful(self):
-        value = self._get_plan_property_(get_dul_uri(SATISFIES))
+        value = self._get_action_property_(get_dul_uri(SATISFIES))
 
-        return value is None
+        return value
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW
         return get_suffix_of_uri(self.context.type_uri).split('_')[0]
-
-    def get_equated_action(self):
-        return None

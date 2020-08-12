@@ -19,7 +19,7 @@ class LoggingInstance(object):
         self._graph_ = graph
 
     def get_id(self):
-        return get_suffix_of_uri(self.context.plan_uri)
+        return get_suffix_of_uri(self.context.action_uri)
 
     def get_start_time_(self):
         return self._get_time_(START_TIME)
@@ -28,20 +28,18 @@ class LoggingInstance(object):
         return self._get_time_(END_TIME)
 
     def _get_time_(self, time_type):
-        time_instance = self._get_plan_property_(get_dul_uri(INCLUDES_TIME))
+        time_instance = self._get_action_property_(get_dul_uri(INCLUDES_TIME))
         if time_instance:
             time = self._graph_.objects(time_instance, get_ease_uri(time_type))
-            if len(time) > 0:
-                time = time[0]
-                time_number = time.get('term')[1].get('term')[2]
-                return _get_time_from_timepoint(time_number)
+            if len(time) > 0 and isinstance(time[0], float):
+                return time[0]
             else:
                 return 0.0
 
         return 0.0
 
-    def _get_plan_property_(self, uri):
-        return self._get_property_(self.context.plan_uri, uri)
+    def _get_action_property_(self, uri):
+        return self._get_property_(self.context.action_uri, uri)
 
     def get_type_property(self, uri):
         return self._get_property_(self.context.type_uri, uri)
