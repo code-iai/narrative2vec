@@ -100,13 +100,12 @@ class Action(LoggingInstance):
             return self._equated_action.get_arm()
 
     def get_failure(self):
-        return ''
-        # failure = self._get_action_property_(get_dul_uri(SATISFIES))
-        #
-        # if failure:
-        #     return get_suffix_of_uri(str(failure))
-        # else:
-        #     return ''
+        failure = self._get_action_property_(get_dul_uri(SATISFIES))
+
+        if failure:
+            return get_suffix_of_uri(str(failure))
+        else:
+            return ''
 
     def get_effort(self):
         effort = self._get_property_(EFFORT)
@@ -128,7 +127,7 @@ class Action(LoggingInstance):
     def is_successful(self):
         value = self._get_action_property_(get_dul_uri(SATISFIES))
 
-        return value
+        return value is None
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW
