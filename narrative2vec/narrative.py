@@ -87,7 +87,7 @@ class Narrative:
             action_end_time - action_start_time,
             action.is_successful(),
             action.get_failure(),
-            '',
+            action.get_parent_action(),
             '',
             '',
             action.get_object_acted_on(),
@@ -95,7 +95,7 @@ class Narrative:
             '',
             '',
             action.get_grasp(),
-            '',
+            ''
         ]
 
         # vector = [

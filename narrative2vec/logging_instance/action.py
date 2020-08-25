@@ -3,7 +3,7 @@ from narrative2vec.ontology.neemNarrativeDefinitions import \
     TASK_SUCCESS, PREVIOUS_ACTION, NEXT_ACTION, SUB_ACTION, \
     OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES, HAS_PARAMETER, \
     INCLUDES_CONCEPT, IS_SETTING_FOR, GRASPING_ORIENTATION_REGION, GRASPING_ORIENTATION, DESIGNED_ARTIFACT, \
-    INCLUDES_OBJECT
+    INCLUDES_OBJECT, HAS_CONSTITUENT
 import re
 
 from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri, get_ease_uri
@@ -41,10 +41,11 @@ class Action(LoggingInstance):
         return object_type
 
     def get_parent_action(self):
-        action_property = self._graph_.subjects(get_knowrob_uri(SUB_ACTION), self.context)
-        parent_uri = _get_first_rdf_query_result(action_property)
+        action_property = self._graph_.subjects(get_dul_uri(HAS_CONSTITUENT), self.context.action_uri)
+        if action_property:
+            return get_suffix_of_uri(action_property[0])
 
-        return self._turn_uri_into_action(parent_uri)
+        return ''
 
     def get_next_action(self):
         return self._get_sibling_action_(NEXT_ACTION)
