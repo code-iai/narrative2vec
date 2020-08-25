@@ -16,6 +16,7 @@ from ontology.ontologyHandler import get_knowrob_uri, get_dul_uri
 class Narrative:
     def __init__(self, path_to_narrative_file):
         self._pathToNarrativeFile_ = path_to_narrative_file
+        self.actions = None
         self._graph_ = None
         self.reasoning_tasks = None
         self.is_open = False
@@ -40,12 +41,7 @@ class Narrative:
 
     def get_poses(self):
         if self.poses is None:
-
-            self.poses = []
-            poses = self._query_all_poses_()
-
-            for pose in poses:
-                self.poses.append(self._pose_2_vec_(pose))
+            self.poses = self._query_all_poses_()
 
         return self.poses
 
@@ -74,11 +70,12 @@ class Narrative:
         return vec
 
     def toVecs(self):
-        actions = self.get_all_actions()
-        return map(self.toVec, actions)
+        if not self.actions:
+            self.actions = self.get_all_actions()
 
-    def toVec(self, action_context):
-        action = Action(action_context, self._graph_)
+        return [self.toVec(x) for x in self.actions]
+
+    def toVec(self, action):
         action_start_time = action.get_start_time_()
         action_end_time = action.get_end_time()
 
@@ -139,12 +136,24 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        return self._graph_.subjects(predicate=get_knowrob_uri(QUATERNION))
+        grasping_actions = filter(lambda action: action.get_type() == 'Grasping' and action.get_object_acted_on(), self.actions)
+        rows = []
+        id = 0
+
+        for grasping_action in grasping_actions:
+            query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, ease:'hasIntervalEnd', _T2)])," \
+                "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
+                "['base_footprint',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, grasping_action.get_object_acted_on())
+            solutions = self._graph_.send_query(query)
+            rows.append([id, grasping_action.get_id(), solutions[0].get('Position'), solutions[0].get('Orientation')])
+            id += 1
+
+        return rows
 
     def get_all_actions(self):
         result = [x for x in self._graph_.subjects_objects(get_dul_uri(IS_EXECUTED_IN))]
 
-        return [LoggingContext(action, task) for action, task in result]
+        return [Action(context, self._graph_) for context in [LoggingContext(action, task) for action, task in result]]
 
     def get_all_action_types(self):
         action_types = set()
@@ -164,7 +173,7 @@ class Narrative:
 
         self._write_actions_to_csv_file_()
         #self._write_reasoning_tasks_to_csv_file_()
-        #self._write_poses_to_csv_file_()
+        self._write_poses_to_csv_file_()
 
 
     def _write_actions_to_csv_file_(self):

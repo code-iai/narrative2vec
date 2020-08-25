@@ -4,6 +4,7 @@ from narrative2vec.ontology.neemNarrativeDefinitions import \
     OBJECT_ACTED_ON, BODY_PARTS_USED, OBJECT_TYPE, GRASP, FAILURE, ARM, EQUATE, EFFORT, SATISFIES, HAS_PARAMETER, \
     INCLUDES_CONCEPT, IS_SETTING_FOR, GRASPING_ORIENTATION_REGION, GRASPING_ORIENTATION, DESIGNED_ARTIFACT, \
     INCLUDES_OBJECT
+import re
 
 from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowrob_uri, get_dul_uri, get_ease_uri
 
@@ -30,12 +31,12 @@ class Action(LoggingInstance):
         object_type = object_id.split('_')[0]
 
         if object_type == DESIGNED_ARTIFACT:
-            query = "rdf_has('{}', rdfs:'comment', R).".format(get_dul_uri(object_id))
+            query = "ask(triple('{}', rdfs:'comment', R)).".format(get_dul_uri(object_id))
             solutions = self._graph_.send_query(query)
 
             if len(solutions) == 1:
                 solution = solutions[0].get('R')
-                object_type = solution.split('%22')[1]
+                object_type = solution.split(':')[1]
 
         return object_type
 
@@ -55,7 +56,14 @@ class Action(LoggingInstance):
         object_acted_on = self._get_action_property_(get_dul_uri(INCLUDES_OBJECT))
         if object_acted_on is not None:
             object_acted_on = get_suffix_of_uri(object_acted_on)
-
+        elif self.get_type() == 'Accessing':
+            results = self._graph_.send_query("ask(triple(dul:'{}',rdfs:'comment', O)).".format(self.get_id()))
+            for result in results:
+                comment = result.get('O')
+                search_result = re.search("\(URDF-NAME(.+)\)",comment)
+                if search_result:
+                    object_acted_on = search_result.groups()[0]
+                    break
         return object_acted_on
 
     def get_object_type(self):
