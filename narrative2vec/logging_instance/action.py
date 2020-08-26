@@ -57,7 +57,7 @@ class Action(LoggingInstance):
         object_acted_on = self._get_action_property_(get_dul_uri(INCLUDES_OBJECT))
         if object_acted_on is not None:
             object_acted_on = get_suffix_of_uri(object_acted_on)
-        elif self.get_type() == 'Accessing':
+        elif self.get_type() == 'Accessing' or self.get_type() == 'Sealing':
             results = self._graph_.send_query("ask(triple(dul:'{}',rdfs:'comment', O)).".format(self.get_id()))
             for result in results:
                 comment = result.get('O')
