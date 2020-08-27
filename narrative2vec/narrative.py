@@ -141,7 +141,7 @@ class Narrative:
         id = 0
 
         for grasping_action in grasping_actions:
-            query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, ease:'hasIntervalEnd', _T2)])," \
+            query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, soma:'hasIntervalEnd', _T2)])," \
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
                 "['base_footprint',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, grasping_action.get_object_acted_on())
             solutions = self._graph_.send_query(query)

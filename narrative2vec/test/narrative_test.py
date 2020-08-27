@@ -5,7 +5,7 @@ from narrative2vec.narrative import Narrative
 import narrative2vec.knowrob_communication.knowrob_talker as talker
 
 ABSOULTE_PATH_TO_NARRATIVE_TEST_PARENT_DIR = dirname(abspath(__file__))
-NEEM_TEST_FILE_PATH = join(ABSOULTE_PATH_TO_NARRATIVE_TEST_PARENT_DIR, '1598199733.8130312')
+NEEM_TEST_FILE_PATH = join(ABSOULTE_PATH_TO_NARRATIVE_TEST_PARENT_DIR, '1598514895.4170578')
 DESTINATION_PATH_DIR = join(ABSOULTE_PATH_TO_NARRATIVE_TEST_PARENT_DIR, 'test_result')
 
 
