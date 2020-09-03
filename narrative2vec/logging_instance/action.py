@@ -12,6 +12,7 @@ from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowro
 class Action(LoggingInstance):
     def __init__(self, context, time_interval, graph):
         super(Action, self).__init__(context, time_interval, graph)
+        self.failure = ''
         #self._object_map = self._init_object_map()
 
     def _init_object_map(self):
@@ -109,10 +110,8 @@ class Action(LoggingInstance):
             return self._equated_action.get_arm()
 
     def get_failure(self):
-        failure = self._get_action_property_(get_dul_uri(SATISFIES))
-
-        if failure:
-            return get_suffix_of_uri(str(failure))
+        if self.failure:
+            return get_suffix_of_uri(self.failure)
         else:
             return ''
 
@@ -134,9 +133,7 @@ class Action(LoggingInstance):
         return None
 
     def is_successful(self):
-        value = self._get_action_property_(get_dul_uri(SATISFIES))
-
-        return value is None
+        return self.failure is ''
 
     def get_type(self):
         # http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject_HLOUBZDW

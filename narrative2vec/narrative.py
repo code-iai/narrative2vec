@@ -17,7 +17,7 @@ from ontology.ontologyHandler import get_knowrob_uri, get_dul_uri
 class Narrative:
     def __init__(self, path_to_narrative_file):
         self._pathToNarrativeFile_ = path_to_narrative_file
-        self.actions = None
+        self.actions = {}
         self._graph_ = None
         self.reasoning_tasks = None
         self.is_open = False
@@ -72,9 +72,18 @@ class Narrative:
 
     def toVecs(self):
         if not self.actions:
-            self.actions = self.get_all_actions()
+            self.get_all_actions()
+            self.assert_failures_to_actions()
 
-        return [self.toVec(x) for x in self.actions]
+        return [self.toVec(x) for x in self.actions.values()]
+
+    def assert_failures_to_actions(self):
+        if self.actions:
+            query = "findall([Action,Failure], ask(triple(Action,dul:'satisfies',Failure)),R)"
+            solutions = self._graph_.send_query(query).get('R')
+            for solution in solutions:
+                self.actions[solution[0]].failure = solution[1]
+
 
     def toVec(self, action):
         action_start_time = action.get_start_time_()
@@ -86,10 +95,8 @@ class Narrative:
             action_start_time,
             action_end_time,
             action_end_time - action_start_time,
-            '',
-            #action.is_successful(),
-            '',
-            #action.get_failure(),
+            action.is_successful(),
+            action.get_failure(),
             '',
             #action.get_parent_action(),
             '',
@@ -129,9 +136,15 @@ class Narrative:
         query = "findall([Action,Task,T1,T2], ask([triple(Action,dul:'executesTask',Task)," \
                 "triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)"\
                 "]),R)"
+
         solutions = self._graph_.send_query(query).get('R')
 
-        return [Action(LoggingContext(*solution[:2]), TimeInterval(*solution[2:]), self._graph_) for solution in solutions]
+        actions = [Action(LoggingContext(*solution[:2]), TimeInterval(*solution[2:]), self._graph_) for solution in solutions]
+
+        for action in actions:
+            self.actions[action.get_id_url()] = action
+
+
 
     def get_all_action_types(self):
         action_types = set()

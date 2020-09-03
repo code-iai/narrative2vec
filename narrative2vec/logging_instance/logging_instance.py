@@ -27,6 +27,9 @@ class LoggingInstance(object):
     def get_end_time(self):
         return self.time_interval.end_time
 
+    def get_id_url(self):
+        return self.context.action_uri
+
     def _get_action_property_(self, uri):
         return self._get_property_(self.context.action_uri, uri)
 
