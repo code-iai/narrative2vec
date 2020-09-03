@@ -1,4 +1,3 @@
-from narrative2vec.ontology.neemNarrativeDefinitions import START_TIME, END_TIME, INCLUDES_TIME
 from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_ease_uri, get_dul_uri
 
 
@@ -14,29 +13,19 @@ def _get_first_rdf_query_result(result):
 
 
 class LoggingInstance(object):
-    def __init__(self, context, graph):
+    def __init__(self, context, time_interval, graph):
         self.context = context
+        self.time_interval = time_interval
         self._graph_ = graph
 
     def get_id(self):
         return get_suffix_of_uri(self.context.action_uri)
 
     def get_start_time_(self):
-        return self._get_time_(START_TIME)
+        return self.time_interval.start_time
 
     def get_end_time(self):
-        return self._get_time_(END_TIME)
-
-    def _get_time_(self, time_type):
-        time_instance = self._get_action_property_(get_dul_uri(INCLUDES_TIME))
-        if time_instance:
-            time = self._graph_.objects(time_instance, get_ease_uri(time_type))
-            if len(time) > 0 and isinstance(time[0], float):
-                return time[0]
-            else:
-                return 0.0
-
-        return 0.0
+        return self.time_interval.end_time
 
     def _get_action_property_(self, uri):
         return self._get_property_(self.context.action_uri, uri)

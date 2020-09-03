@@ -6,9 +6,7 @@ def init():
 
 
 def load(path_to_narrative_file):
-    query = "remember('{0}'), " \
-            "use_module('/home/koralewski/catkin_ws/ros_cram/src/knowrob/src/comm/ros/tf/tf_plugin.pl')," \
-            "tf_mng_remember('{0}').".format(path_to_narrative_file)
+    query = "remember('{0}').".format(path_to_narrative_file)
     talker.get_all_solutions(query)
 
 

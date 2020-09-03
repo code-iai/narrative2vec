@@ -1,6 +1,7 @@
 from os import makedirs
 from os.path import join, basename, exists
 
+from narrative2vec.ontology.TimeInterval import TimeInterval
 from ontology import graph
 from narrative2vec.logging_instance.action import Action
 from narrative2vec.logging_instance.logging_context import LoggingContext
@@ -85,50 +86,24 @@ class Narrative:
             action_start_time,
             action_end_time,
             action_end_time - action_start_time,
-            action.is_successful(),
-            action.get_failure(),
-            action.get_parent_action(),
+            '',
+            #action.is_successful(),
+            '',
+            #action.get_failure(),
+            '',
+            #action.get_parent_action(),
             '',
             '',
-            action.get_object_acted_on(),
-            action.get_object_type(),
+            '',
+            #action.get_object_acted_on(),
+            '',
+            #action.get_object_type(),
             '',
             '',
-            action.get_grasp(),
+            '',
+            #action.get_grasp(),
             ''
         ]
-
-        # vector = [
-        #     action.get_id(),
-        #     action.get_type(),
-        #     action_start_time,
-        #     action_end_time,
-        #     action_end_time - action_start_time,
-        #     action.is_successful(),
-        #     action.get_failure(),
-        #     '',
-        #     '',
-        #     '',
-        #     action.get_object_acted_on(),
-        #     action.get_object_type(),
-        #     action.get_body_parts_used(),
-        #     action.get_arm(),
-        #     action.get_grasp(),
-        #     action.get_effort()
-        # ]
-
-        # try:
-        #     vector[7] = action.get_parent_action().get_id()
-        # except AttributeError:
-        #     pass
-        # try:
-        #     vector[8] = action.get_next_action().get_id()
-        # except AttributeError:
-        #     pass
-        # try:
-        #     vector[9] = action.get_previous_action().get_id()
-        # except AttributeError:
-        #     pass
 
         return vector
 
@@ -151,9 +126,12 @@ class Narrative:
         return rows
 
     def get_all_actions(self):
-        result = [x for x in self._graph_.subjects_objects(get_dul_uri(IS_EXECUTED_IN))]
+        query = "findall([Action,Task,T1,T2], ask([triple(Action,dul:'executesTask',Task)," \
+                "triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)"\
+                "]),R)"
+        solutions = self._graph_.send_query(query).get('R')
 
-        return [Action(context, self._graph_) for context in [LoggingContext(action, task) for action, task in result]]
+        return [Action(LoggingContext(*solution[:2]), TimeInterval(*solution[2:]), self._graph_) for solution in solutions]
 
     def get_all_action_types(self):
         action_types = set()
@@ -173,7 +151,7 @@ class Narrative:
 
         self._write_actions_to_csv_file_()
         #self._write_reasoning_tasks_to_csv_file_()
-        self._write_poses_to_csv_file_()
+        #self._write_poses_to_csv_file_()
 
 
     def _write_actions_to_csv_file_(self):
@@ -189,6 +167,6 @@ class Narrative:
         narrative_csv.write(poses.get_definition(), self.get_poses(), csv_file_path)
 
     def _init_graph(self):
-        graph.load(self._pathToNarrativeFile_)
+        #graph.load(self._pathToNarrativeFile_)
         return graph
 

@@ -10,9 +10,9 @@ from narrative2vec.ontology.ontologyHandler import get_suffix_of_uri, get_knowro
 
 
 class Action(LoggingInstance):
-    def __init__(self, context, graph):
-        super(Action, self).__init__(context, graph)
-        self._object_map = self._init_object_map()
+    def __init__(self, context, time_interval, graph):
+        super(Action, self).__init__(context, time_interval, graph)
+        #self._object_map = self._init_object_map()
 
     def _init_object_map(self):
         result = {}
