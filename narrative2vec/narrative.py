@@ -74,8 +74,16 @@ class Narrative:
         if not self.actions:
             self.get_all_actions()
             self.assert_failures_to_actions()
+            self.assert_parents_to_actions()
 
         return [self.toVec(x) for x in self.actions.values()]
+
+    def assert_parents_to_actions(self):
+        if self.actions:
+            query = "findall([Parent,Child], ask(triple(Parent,dul:'hasConstituent',Child)),R)"
+            solutions = self._graph_.send_query(query).get('R')
+            for parent_url, child_url in solutions:
+                self.actions[child_url].parent_uri = parent_url
 
     def assert_failures_to_actions(self):
         if self.actions:
@@ -83,7 +91,6 @@ class Narrative:
             solutions = self._graph_.send_query(query).get('R')
             for solution in solutions:
                 self.actions[solution[0]].failure = solution[1]
-
 
     def toVec(self, action):
         action_start_time = action.get_start_time_()
@@ -97,8 +104,7 @@ class Narrative:
             action_end_time - action_start_time,
             action.is_successful(),
             action.get_failure(),
-            '',
-            #action.get_parent_action(),
+            action.get_parent_action(),
             '',
             '',
             '',
