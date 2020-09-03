@@ -75,6 +75,7 @@ class Narrative:
             self.get_all_actions()
             self.assert_failures_to_actions()
             self.assert_parents_to_actions()
+            self.assert_graspings_to_actions()
 
         return [self.toVec(x) for x in self.actions.values()]
 
@@ -91,6 +92,18 @@ class Narrative:
             solutions = self._graph_.send_query(query).get('R')
             for solution in solutions:
                 self.actions[solution[0]].failure = solution[1]
+
+    def assert_graspings_to_actions(self):
+        if self.actions:
+            query = "findall([Action, Grasp], " \
+                    "ask([triple(Action,dul:'executesTask',Task)," \
+                    "triple(Task,dul:'hasParameter',Parameter)," \
+                    " instance_of(Parameter,soma:'GraspingOrientation')," \
+                    "triple(Parameter, dul:'classifies', Grasp)]),R)"
+            solutions = self._graph_.send_query(query).get('R')
+            for action_uri, grasp_uri in solutions:
+                self.actions[action_uri].grasp_url = grasp_uri
+
 
     def toVec(self, action):
         action_start_time = action.get_start_time_()
@@ -113,8 +126,7 @@ class Narrative:
             #action.get_object_type(),
             '',
             '',
-            '',
-            #action.get_grasp(),
+            action.get_grasp(),
             ''
         ]
 

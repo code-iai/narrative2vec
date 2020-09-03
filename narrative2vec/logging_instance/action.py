@@ -14,6 +14,7 @@ class Action(LoggingInstance):
         super(Action, self).__init__(context, time_interval, graph)
         self.failure = ''
         self.parent_uri = ''
+        self.grasp_uri = ''
         #self._object_map = self._init_object_map()
 
     def _init_object_map(self):
@@ -75,21 +76,11 @@ class Action(LoggingInstance):
         return object_type
 
     def get_grasp(self):
-        grasp = self.get_type_property(get_dul_uri(HAS_PARAMETER))
+        if self.grasp_uri:
+            #http://www.ease-crc.org/ont/EASE.owl#FrontGrasp_TUYVDNPS
+            return get_suffix_of_uri(self.grasp_uri).split('Grasp_')[0]
 
-        if grasp and self._graph_.is_concept_type_of(grasp, get_ease_uri(GRASPING_ORIENTATION)):
-            query = "ask(triple('{}','{}', O))."\
-                    .format(grasp,
-                            get_dul_uri(INCLUDES_CONCEPT))
-
-            solutions = self._graph_.send_query(query)
-            if len(solutions) == 1:
-                grasp = solutions[0].get('O')
-                if grasp:
-                    #'http://www.ease-crc.org/ont/EASE.owl#FrontGrasp_TUYVDNPS'
-                    grasp = get_suffix_of_uri(grasp).split('Grasp_')[0]
-
-        return grasp
+        return ''
 
     def get_body_parts_used(self):
         body_parts_used = self._get_property_(BODY_PARTS_USED)
@@ -109,10 +100,8 @@ class Action(LoggingInstance):
             return self._equated_action.get_arm()
 
     def get_failure(self):
-        if self.failure:
-            return get_suffix_of_uri(self.failure)
-        else:
-            return ''
+        return get_suffix_of_uri(self.failure)
+
 
     def get_effort(self):
         effort = self._get_property_(EFFORT)

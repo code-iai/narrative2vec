@@ -18,4 +18,6 @@ def _build_uri_ref_with_suffix(uri, suffix):
 
 def get_suffix_of_uri(uri):
     #http://knowrob.org/kb/knowrob.owl#SUFFIX
-    return str(uri.split('#')[1])
+    if uri:
+        return str(uri.split('#')[1])
+    return ''
