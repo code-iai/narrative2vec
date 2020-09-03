@@ -55,13 +55,15 @@ class Action(LoggingInstance):
         return self._get_sibling_action_(PREVIOUS_ACTION)
 
     def get_object_acted_on(self):
-        object_acted_on = self._get_action_property_(get_dul_uri(INCLUDES_OBJECT))
-        if object_acted_on is not None:
-            object_acted_on = get_suffix_of_uri(object_acted_on)
+        query =  "ask(triple(dul:'{}',dul:'hasParticipant',Object))".format(self.get_id())
+        solution = self._graph_.send_query(query)
+        object_acted_on = None
+        if solution:
+            object_acted_on = get_suffix_of_uri(solution.get('Object'))
         elif self.get_type() == 'Accessing' or self.get_type() == 'Sealing':
-            results = self._graph_.send_query("ask(triple(dul:'{}',rdfs:'comment', O)).".format(self.get_id()))
-            for result in results:
-                comment = result.get('O')
+            results = self._graph_.send_query("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
+            for result in results.get('R'):
+                comment = result
                 search_result = re.search("\(URDF-NAME(.+)\)",comment)
                 if search_result:
                     object_acted_on = search_result.groups()[0]

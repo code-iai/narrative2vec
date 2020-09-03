@@ -120,9 +120,8 @@ class Narrative:
             action.get_parent_action(),
             '',
             '',
-            '',
-            #action.get_object_acted_on(),
-            '',
+            action.get_object_acted_on(),
+            ''
             #action.get_object_type(),
             '',
             '',
@@ -198,6 +197,6 @@ class Narrative:
         narrative_csv.write(poses.get_definition(), self.get_poses(), csv_file_path)
 
     def _init_graph(self):
-        #graph.load(self._pathToNarrativeFile_)
+        graph.load(self._pathToNarrativeFile_)
         return graph
 
