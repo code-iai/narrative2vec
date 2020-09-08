@@ -135,7 +135,7 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        grasping_actions = filter(lambda action: action.get_type() == 'Grasping' and action.get_object_acted_on(), self.actions)
+        grasping_actions = filter(lambda action: action.get_type() == 'Grasping' and action.get_object_acted_on(), self.actions.values())
         rows = []
         id = 0
 
@@ -144,7 +144,7 @@ class Narrative:
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
                 "['base_footprint',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, grasping_action.get_object_acted_on())
             solutions = self._graph_.send_query(query)
-            rows.append([id, grasping_action.get_id(), solutions[0].get('Position'), solutions[0].get('Orientation')])
+            rows.append([id, grasping_action.get_id(), solutions.get('Position'), solutions.get('Orientation')])
             id += 1
 
         return rows
@@ -181,7 +181,7 @@ class Narrative:
 
         self._write_actions_to_csv_file_()
         #self._write_reasoning_tasks_to_csv_file_()
-        #self._write_poses_to_csv_file_()
+        self._write_poses_to_csv_file_()
 
 
     def _write_actions_to_csv_file_(self):
