@@ -15,6 +15,7 @@ class Action(LoggingInstance):
         self.failure = ''
         self.parent_uri = ''
         self.grasp_uri = ''
+        self.arm = ''
         #self._object_map = self._init_object_map()
 
     def _init_object_map(self):
@@ -95,11 +96,15 @@ class Action(LoggingInstance):
         return body_parts_used
 
     def get_arm(self):
-        arm = self._get_property_(ARM)
-        if arm:
-            return get_suffix_of_uri(arm)
-        elif self._equated_action:
-            return self._equated_action.get_arm()
+        if self.get_type() == 'Grasping' or self.get_type() == 'Placing':
+            results = self._graph_.send_query("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
+            for result in results.get('R'):
+                if result.startswith("Unknown Parameter: :GRIPPER -####-"):
+                    return result.split("Unknown Parameter: :GRIPPER -####-")[1]
+                elif result.startswith("Unknown Parameter: :ARM -####-"):
+                    return result.split("Unknown Parameter: :ARM -####-")[1]
+
+        return ''
 
     def get_failure(self):
         return get_suffix_of_uri(self.failure)
