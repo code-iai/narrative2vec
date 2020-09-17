@@ -102,19 +102,22 @@ class Narrative:
                     "triple(Parameter, dul:'classifies', Grasp)]),R)"
             solutions = self._graph_.send_query(query).get('R')
             for action_uri, grasp_uri in solutions:
-                self.actions[action_uri].grasp_url = grasp_uri
+                self.actions[action_uri].grasp_uri = grasp_uri
 
 
     def toVec(self, action):
         action_start_time = action.get_start_time_()
         action_end_time = action.get_end_time()
+        duration = 0.0
+        if isinstance(action_end_time, float):
+            duration = action_end_time - action_start_time
 
         vector = [
             action.get_id(),
             action.get_type(),
             action_start_time,
             action_end_time,
-            action_end_time - action_start_time,
+            duration,
             action.is_successful(),
             action.get_failure(),
             action.get_parent_action(),
@@ -124,7 +127,7 @@ class Narrative:
             ''
             #action.get_object_type(),
             '',
-            '',
+            action.get_arm(),
             action.get_grasp(),
             ''
         ]
@@ -135,7 +138,7 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        grasping_actions = filter(lambda action: action.get_type() == 'Grasping' and action.get_object_acted_on(), self.actions.values())
+        grasping_actions = filter(lambda action: (action.get_type() == 'Grasping' or action.get_type() == 'Placing')  and action.get_object_acted_on(), self.actions.values())
         rows = []
         id = 0
 
@@ -144,8 +147,11 @@ class Narrative:
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
                 "['base_footprint',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, grasping_action.get_object_acted_on())
             solutions = self._graph_.send_query(query)
-            rows.append([id, grasping_action.get_id(), solutions.get('Position'), solutions.get('Orientation')])
-            id += 1
+            if solutions:
+                position = solutions.get('Position')
+                orientation = solutions.get('Orientation')
+                rows.append([id, grasping_action.get_id(), position[0],position[1],position[2], orientation[0],orientation[1],orientation[2],orientation[3]])
+                id += 1
 
         return rows
 
