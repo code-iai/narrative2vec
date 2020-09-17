@@ -6,7 +6,10 @@ def init():
 
 
 def load(path_to_narrative_file):
-    query = "remember('{0}').".format(path_to_narrative_file)
+    query = "use_module(library('db/mongo/client')),ensure_loaded('/home/koralewski/catkin_ws/ros_cram/src/knowrob/src/comm/ros/tf/tf_plugin.pl')," \
+            "tripledb_drop(), forall(mng_collection(roslog, Coll), mng_drop(roslog, Coll)),"\
+            "tripledb_load('package://knowrob/owl/knowrob.owl', [graph(tbox), namespace(knowrob)]),"\
+            "remember('{0}').".format(path_to_narrative_file)
     talker.get_all_solutions(query)
 
 
