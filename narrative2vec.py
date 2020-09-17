@@ -1,7 +1,7 @@
 import sys
 import time
 from os import listdir, environ
-from os.path import isdir, join
+from os.path import isdir, join, exists
 
 from narrative2vec.narrative import Narrative
 import narrative2vec.knowrob_communication.knowrob_talker as talker
@@ -13,7 +13,6 @@ if __name__ == "__main__":
         result_dir_path = args[1]
 
         if isdir(neem_home_path):
-            talker.init_knowrob_talker()
             neem_names = listdir(neem_home_path)
 
             '''
@@ -26,15 +25,25 @@ if __name__ == "__main__":
             if len(neem_names) == 0:
                 print 'The neem source folder is empty'
 
+            talker.init_knowrob_talker()
             for neem_name in neem_names:
                 neem_path = join(neem_home_path, neem_name)
 
-                narrative = Narrative(neem_path)
-                narrative.load()
-                print 'Processing NEEM {}'.format(neem_path)
-                narrative.transform_to_csv_file(result_dir_path)
-                print 'DONE Processing NEEM {}'.format(neem_path)
+                if exists(join(result_dir_path,neem_name.split('.')[0].strip())):
+                    print('Already processed {}'.format(neem_path))
+                    continue
+
+                try:
+                    narrative = Narrative(neem_path)
+                    narrative.load()
+                    print('Processing NEEM {}'.format(neem_path))
+                    narrative.transform_to_csv_file(result_dir_path)
+                    print('DONE Processing NEEM {}'.format(neem_path))
+                except Exception as e:
+                    print(e)
+                    print('Failed {}'.format(neem_name))
             talker.close()
+
         else:
             print 'No vaild directory given: {}'.format(neem_home_path)
     else:
