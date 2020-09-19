@@ -13,7 +13,7 @@ class Action(LoggingInstance):
     def __init__(self, context, time_interval, graph):
         super(Action, self).__init__(context, time_interval, graph)
         self.failure = ''
-        self.parent_uri = ''
+        self.parent = ''
         self.grasp_uri = ''
         self.arm = ''
         #self._object_map = self._init_object_map()
@@ -45,8 +45,8 @@ class Action(LoggingInstance):
         return object_type
 
     def get_parent_action(self):
-        if self.parent_uri:
-            return get_suffix_of_uri(self.parent_uri)
+        if self.parent:
+            return get_suffix_of_uri(self.parent.context.action_uri)
         return ''
 
     def get_next_action(self):

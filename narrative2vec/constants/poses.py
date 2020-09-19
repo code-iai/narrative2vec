@@ -7,4 +7,5 @@ def get_definition():
             'q_x',
             'q_y',
             'q_z',
-            'q_w']
+            'q_w',
+            'information']
