@@ -138,7 +138,8 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        grasping_actions = filter(lambda action: (action.get_type() == 'Grasping' or action.get_type() == 'Placing'), self.actions.values())
+        grasping_actions = filter(lambda action: ((action.get_type() == 'Grasping' or action.get_type() == 'Placing')
+                                                  and grasping_action.get_object_acted_on()), self.actions.values())
         rows = []
         id = 0
 
@@ -148,20 +149,50 @@ class Narrative:
                 if grasping_action.parent:
                     if grasping_action.parent.get_type() == 'Opening' and grasping_action.parent.parent and grasping_action.parent.parent.get_type() == 'Accessing':
                         additional_information = "Opening:{}".format(grasping_action.parent.parent.get_object_acted_on())
+                        grasping_action = grasping_action.parent
                     elif grasping_action.parent.get_type() == 'Closing' and grasping_action.parent.parent and grasping_action.parent.parent.get_type() == 'Sealing':
                         additional_information = "Closing:{}".format(
                             grasping_action.parent.parent.get_object_acted_on())
-
+                        grasping_action = grasping_action.parent
 
             query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, soma:'hasIntervalEnd', _T2)])," \
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
                 "['map',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, 'base_footprint')
             solutions = self._graph_.send_query(query)
+
             if solutions:
                 position = solutions.get('Position')
                 orientation = solutions.get('Orientation')
                 rows.append([id, grasping_action.get_id(), position[0],position[1],position[2], orientation[0],orientation[1],orientation[2],orientation[3],additional_information])
                 id += 1
+
+        environment_actions = filter(lambda action: (action.get_type() == 'Opening' or action.get_type() == 'Closing'),
+                                  self.actions.values())
+
+        for grasping_action in environment_actions:
+            additional_information = ""
+
+            if grasping_action.parent.get_type() == 'Opening':
+                if grasping_action.parent and grasping_action.paren.get_type() == 'Accessing':
+                    additional_information = "Opening:{}".format(
+                        grasping_action.parent.get_object_acted_on())
+            elif grasping_action.parent.get_type() == 'Closing':
+                if grasping_action.parent and grasping_action.paren.get_type() == 'Sealing':
+                    additional_information = "Closing:{}".format(
+                        grasping_action.parent.get_object_acted_on())
+
+            if additional_information:
+                query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, soma:'hasIntervalBegin', _T2)])," \
+                        "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
+                        "['map',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri,
+                                                                              'base_footprint')
+                solutions = self._graph_.send_query(query)
+                if solutions:
+                    position = solutions.get('Position')
+                    orientation = solutions.get('Orientation')
+                    rows.append([id, grasping_action.get_id(), position[0], position[1], position[2], orientation[0],
+                                 orientation[1], orientation[2], orientation[3], additional_information])
+                    id += 1
 
         return rows
 
