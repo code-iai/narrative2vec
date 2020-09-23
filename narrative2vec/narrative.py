@@ -145,16 +145,6 @@ class Narrative:
 
         for grasping_action in grasping_actions:
             additional_information = ""
-            if grasping_action.get_type() == 'Grasping' and not grasping_action.get_object_acted_on():
-                if grasping_action.parent:
-                    if grasping_action.parent.get_type() == 'Opening' and grasping_action.parent.parent and grasping_action.parent.parent.get_type() == 'Accessing':
-                        additional_information = "Opening:{}".format(grasping_action.parent.parent.get_object_acted_on())
-                        grasping_action = grasping_action.parent
-                    elif grasping_action.parent.get_type() == 'Closing' and grasping_action.parent.parent and grasping_action.parent.parent.get_type() == 'Sealing':
-                        additional_information = "Closing:{}".format(
-                            grasping_action.parent.parent.get_object_acted_on())
-                        grasping_action = grasping_action.parent
-
             query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, soma:'hasIntervalEnd', _T2)])," \
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
                 "['map',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, 'base_footprint')
@@ -172,12 +162,12 @@ class Narrative:
         for grasping_action in environment_actions:
             additional_information = ""
 
-            if grasping_action.parent.get_type() == 'Opening':
-                if grasping_action.parent and grasping_action.paren.get_type() == 'Accessing':
+            if grasping_action.get_type() == 'Opening':
+                if grasping_action.parent and grasping_action.parent.get_type() == 'Accessing':
                     additional_information = "Opening:{}".format(
                         grasping_action.parent.get_object_acted_on())
-            elif grasping_action.parent.get_type() == 'Closing':
-                if grasping_action.parent and grasping_action.paren.get_type() == 'Sealing':
+            elif grasping_action.get_type() == 'Closing':
+                if grasping_action.parent and grasping_action.parent.get_type() == 'Sealing':
                     additional_information = "Closing:{}".format(
                         grasping_action.parent.get_object_acted_on())
 

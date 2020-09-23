@@ -27,7 +27,7 @@ def get_all_solutions(query_str):
 
 def close():
     rospy.signal_shutdown('Closing Talker')
-    print 'Closing Talker'
+    print ('Closing Talker')
 
 
 def _is_talker_alive():
