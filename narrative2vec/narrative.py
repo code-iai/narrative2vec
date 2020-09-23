@@ -81,7 +81,7 @@ class Narrative:
 
     def assert_parents_to_actions(self):
         if self.actions:
-            query = "findall([Parent,Child], ask(triple(Parent,dul:'hasConstituent',Child)),R)"
+            query = "findall([Parent,Child], ask([triple(Parent,dul:'hasConstituent',Child),instance_of(Parent,dul:'Action'),instance_of(Child,dul:'Action')]),R)"
             solutions = self._graph_.send_query(query).get('R')
             for parent_url, child_url in solutions:
                 self.actions[child_url].parent = self.actions[parent_url]
