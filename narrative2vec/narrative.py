@@ -139,7 +139,7 @@ class Narrative:
 
     def _query_all_poses_(self):
         grasping_actions = filter(lambda action: ((action.get_type() == 'Grasping' or action.get_type() == 'Placing')
-                                                  and grasping_action.get_object_acted_on()), self.actions.values())
+                                                  and action.get_object_acted_on()), self.actions.values())
         rows = []
         id = 0
 
