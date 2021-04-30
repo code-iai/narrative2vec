@@ -57,18 +57,21 @@ class Action(LoggingInstance):
 
     def get_object_acted_on(self):
         query =  "ask(triple(dul:'{}',dul:'hasParticipant',Object))".format(self.get_id())
-        solution = self._graph_.send_query(query)
+        solution = self._graph_.send_query_all(query)
         object_acted_on = None
-        if solution:
-            object_acted_on = get_suffix_of_uri(solution.get('Object'))
-        elif self.get_type() == 'Accessing' or self.get_type() == 'Sealing':
-            results = self._graph_.send_query("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
-            for result in results.get('R'):
-                comment = result
-                search_result = re.search("\(URDF-NAME(.+)\)",comment)
-                if search_result:
-                    object_acted_on = search_result.groups()[0]
-                    break
+        if len(solution) == 2:
+            obj = solution[1].get('Object')
+            if obj != "NIL":
+                object_acted_on = get_suffix_of_uri(solution[1].get('Object'))
+
+        # elif self.get_type() == 'Accessing' or self.get_type() == 'Sealing':
+        #     results = self._graph_.send_query("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
+        #     for result in results.get('R'):
+        #         comment = result
+        #         search_result = re.search("\(URDF-NAME(.+)\)",comment)
+        #         if search_result:
+        #             object_acted_on = search_result.groups()[0]
+        #             break
         return object_acted_on
 
     def get_object_type(self):
@@ -97,7 +100,7 @@ class Action(LoggingInstance):
 
     def get_arm(self):
         if self.get_type() == 'Grasping' or self.get_type() == 'Placing':
-            results = self._graph_.send_query("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
+            results = self._graph_.send_query_once("findall(O,ask(triple(dul:'{}',rdfs:'comment', O)),R).".format(self.get_id()))
             for result in results.get('R'):
                 if result.startswith("Unknown Parameter: :GRIPPER -####-"):
                     return result.split("Unknown Parameter: :GRIPPER -####-")[1]

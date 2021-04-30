@@ -6,9 +6,9 @@ def init():
 
 
 def load(path_to_narrative_file):
-    query = "use_module(library('db/mongo/client')),ensure_loaded('/home/koralewski/catkin_ws/ros_cram/src/knowrob/src/comm/ros/tf/tf_plugin.pl')," \
-            "tripledb_drop(), forall(mng_collection(roslog, Coll), mng_drop(roslog, Coll)),"\
-            "tripledb_load('package://knowrob/owl/knowrob.owl', [graph(tbox), namespace(knowrob)]),"\
+
+    #"tripledb_load('package://knowrob/owl/knowrob.owl', [graph(tbox), namespace(knowrob)]),"\
+    query = "use_module(library('db/mongo/client')),tripledb_drop(), forall(mng_collection(roslog, Coll), mng_drop(roslog, Coll)),ensure_loaded('/home/koralewski/catkin_ws/ros_cram/src/knowrob/src/ros/tf/tf_plugin.pl')," \
             "remember('{0}').".format(path_to_narrative_file)
     talker.get_all_solutions(query)
 
@@ -41,9 +41,11 @@ def is_concept_type_of(concept_uri, type_uri):
         return False
 
 
-def send_query(query):
+def send_query_all(query):
     return talker.get_all_solutions(query)
 
+def send_query_once(query):
+    return talker.get_first_solution(query)
 
 def close():
     talker.close()

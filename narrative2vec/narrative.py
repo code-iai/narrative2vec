@@ -82,16 +82,18 @@ class Narrative:
     def assert_parents_to_actions(self):
         if self.actions:
             query = "findall([Parent,Child], ask([triple(Parent,dul:'hasConstituent',Child),instance_of(Parent,dul:'Action'),instance_of(Child,dul:'Action')]),R)"
-            solutions = self._graph_.send_query(query).get('R')
+            solutions = self._graph_.send_query_once(query).get('R')
             for parent_url, child_url in solutions:
-                self.actions[child_url].parent = self.actions[parent_url]
+                if self.actions.get(child_url) and self.actions.get(parent_url):
+                    self.actions[child_url].parent = self.actions[parent_url]
 
     def assert_failures_to_actions(self):
         if self.actions:
             query = "findall([Action,Failure], ask(triple(Action,dul:'satisfies',Failure)),R)"
-            solutions = self._graph_.send_query(query).get('R')
+            solutions = self._graph_.send_query_once(query).get('R')
             for solution in solutions:
-                self.actions[solution[0]].failure = solution[1]
+                if self.actions.get(solution[0]):
+                    self.actions[solution[0]].failure = solution[1]
 
     def assert_graspings_to_actions(self):
         if self.actions:
@@ -100,9 +102,10 @@ class Narrative:
                     "triple(Task,dul:'hasParameter',Parameter)," \
                     " instance_of(Parameter,soma:'GraspingOrientation')," \
                     "triple(Parameter, dul:'classifies', Grasp)]),R)"
-            solutions = self._graph_.send_query(query).get('R')
+            solutions = self._graph_.send_query_once(query).get('R')
             for action_uri, grasp_uri in solutions:
-                self.actions[action_uri].grasp_uri = grasp_uri
+                if self.actions.get(action_uri):
+                    self.actions[action_uri].grasp_uri = grasp_uri
 
 
     def toVec(self, action):
@@ -138,8 +141,8 @@ class Narrative:
         return self._graph_.subjects(predicate=get_knowrob_uri(PREDICATE))
 
     def _query_all_poses_(self):
-        grasping_actions = filter(lambda action: ((action.get_type() == 'Grasping' or action.get_type() == 'Placing')
-                                                  and action.get_object_acted_on()), self.actions.values())
+        grasping_actions = filter(lambda action: ((action.get_type() == 'Grasping' or action.get_type() == 'Placing' or action.get_type() == "Perceiving")
+                                                  ), self.actions.values())
         rows = []
         id = 0
 
@@ -147,8 +150,8 @@ class Narrative:
             additional_information = ""
             query = "ask([triple('{}',dul:'hasTimeInterval',_O), triple(_O, soma:'hasIntervalEnd', _T2)])," \
                 "time_scope(=<(_T2), >=(_T2), _QScope), tf_get_pose('{}', " \
-                "['map',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, 'base_footprint')
-            solutions = self._graph_.send_query(query)
+                "['map',Position,Orientation], _QScope, _),!.".format(grasping_action.context.action_uri, 'base_link')
+            solutions = self._graph_.send_query_once(query)
 
             if solutions:
                 position = solutions.get('Position')
@@ -188,11 +191,19 @@ class Narrative:
 
     def get_all_actions(self):
         query = "findall([Action,Task,T1,T2], ask([triple(Action,dul:'executesTask',Task)," \
-                "triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)"\
-                "]),R)"
+               "triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)"\
+               "]),R)"
+        #query = "findall([Action, Task ,T1,T2], ask([triple(Task, rdf:'type', soma:'Grasping'), triple(Action,dul:'executesTask', Task), triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)]), R)"
+        solutions = self._graph_.send_query_once(query).get('R')
 
-        solutions = self._graph_.send_query(query).get('R')
-
+        # query = "findall([Action, Task ,T1,T2], ask([triple(Task, rdf:'type', soma:'Placing'), triple(Action,dul:'executesTask', Task), triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)]), R)"
+        # solutions_1 = self._graph_.send_query_once(query).get('R')
+        #
+        # query = "findall([Action, Task ,T1,T2], ask([triple(Task, rdf:'type', soma:'Perceiving'), triple(Action,dul:'executesTask', Task), triple(Action, dul:'hasTimeInterval',_TimeInterval), triple(_TimeInterval, soma:'hasIntervalEnd', T2), triple(_TimeInterval, soma:'hasIntervalBegin', T1)]), R)"
+        # solutions_2 = self._graph_.send_query_once(query).get('R')
+        #
+        # solutions.extend(solutions_1)
+        # solutions.extend(solutions_2)
         actions = [Action(LoggingContext(*solution[:2]), TimeInterval(*solution[2:]), self._graph_) for solution in solutions]
 
         for action in actions:
